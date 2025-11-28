@@ -1,0 +1,75 @@
+<Project>
+    <PropertyGroup>
+        <!-- 通用属性 -->
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn> <!-- 禁用缺少XML注释的警告 -->
+
+        <!-- 包版本统一管理 -->
+        <!-- Web框架 -->
+        <FastEndpointsVersion>7.1.1</FastEndpointsVersion>
+
+        <!-- 数据库 -->
+        <EFCoreVersion>9.0.11</EFCoreVersion>
+        <NpgsqlVersion>9.0.11</NpgsqlVersion>
+        <EFCoreBulkExtensionsVersion>9.0.2</EFCoreBulkExtensionsVersion>
+
+        <!-- CQRS & 验证 -->
+        <MediatRVersion>13.1.0</MediatRVersion>
+        <FluentValidationVersion>12.1.0</FluentValidationVersion>
+        <MapsterVersion>7.4.0</MapsterVersion>
+        <FluentResultsVersion>4.0.0</FluentResultsVersion>
+
+        <!-- 多租户 -->
+        <FinbuckleMultiTenantVersion>9.4.3</FinbuckleMultiTenantVersion>
+
+        <!-- 缓存 -->
+        <StackExchangeRedisVersion>2.10.1</StackExchangeRedisVersion>
+
+        <!-- 密码加密 -->
+        <Argon2Version>1.3.1</Argon2Version>
+
+        <!-- 消息队列 -->
+        <MassTransitVersion>8.5.6</MassTransitVersion>
+
+        <!-- 后台任务 -->
+        <HangfireVersion>1.8.22</HangfireVersion>
+        <HangfirePostgresqlVersion>1.20.12</HangfirePostgresqlVersion>
+
+        <!-- 日志 -->
+        <SerilogVersion>4.3.0</SerilogVersion>
+        <SerilogSinksConsoleVersion>6.1.1</SerilogSinksConsoleVersion>
+        <SerilogSinksFileVersion>7.0.0</SerilogSinksFileVersion>
+        <SerilogSinksSeqVersion>9.0.0</SerilogSinksSeqVersion>
+
+        <!-- 文件处理 -->
+        <EPPlusVersion>8.3.0</EPPlusVersion>
+        <MiniExcelVersion>1.42.0</MiniExcelVersion>
+        <QuestPDFVersion>2025.7.4</QuestPDFVersion>
+        <ImageSharpVersion>3.1.12</ImageSharpVersion>
+        <MinioVersion>7.0.0</MinioVersion>
+
+        <!-- 认证授权 -->
+        <JwtBearerVersion>9.0.11</JwtBearerVersion>
+
+        <!-- API版本控制 -->
+        <AspVersioningVersion>9.0.0</AspVersioningVersion>
+
+        <!-- 限流 -->
+        <AspNetCoreRateLimitVersion>5.0.0</AspNetCoreRateLimitVersion>
+
+        <!-- 弹性与容错 -->
+        <PollyVersion>8.6.5</PollyVersion>
+        <HttpResilienceVersion>9.10.0</HttpResilienceVersion>
+
+        <!-- 健康检查 -->
+        <HealthChecksVersion>9.0.11</HealthChecksVersion>
+
+        <!-- OpenTelemetry -->
+        <OpenTelemetryVersion>1.14.0</OpenTelemetryVersion>
+    </PropertyGroup>
+</Project>

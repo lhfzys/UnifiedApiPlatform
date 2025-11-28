@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{85DC0233-0213-423E-A1DE-9FFB3F8C2DA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnifiedApiPlatform.Api", "src\UnifiedApiPlatform.Api\UnifiedApiPlatform.Api.csproj", "{1FDB7FBE-44AC-496D-B62E-6B72E242A805}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnifiedApiPlatform.Application", "src\UnifiedApiPlatform.Application\UnifiedApiPlatform.Application.csproj", "{8CC84A94-2240-4DEA-9108-6CC0C94A44CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnifiedApiPlatform.Domain", "src\UnifiedApiPlatform.Domain\UnifiedApiPlatform.Domain.csproj", "{BBC373CC-D526-4F6C-85B7-154011EEF369}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnifiedApiPlatform.Infrastructure", "src\UnifiedApiPlatform.Infrastructure\UnifiedApiPlatform.Infrastructure.csproj", "{59A7D647-6046-4484-8840-4592CDC0EA6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnifiedApiPlatform.Shared", "src\UnifiedApiPlatform.Shared \UnifiedApiPlatform.Shared.csproj", "{0E12FD6A-6962-42C8-8BBE-6EC2C9E715F3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1FDB7FBE-44AC-496D-B62E-6B72E242A805} = {85DC0233-0213-423E-A1DE-9FFB3F8C2DA8}
+		{8CC84A94-2240-4DEA-9108-6CC0C94A44CE} = {85DC0233-0213-423E-A1DE-9FFB3F8C2DA8}
+		{BBC373CC-D526-4F6C-85B7-154011EEF369} = {85DC0233-0213-423E-A1DE-9FFB3F8C2DA8}
+		{59A7D647-6046-4484-8840-4592CDC0EA6E} = {85DC0233-0213-423E-A1DE-9FFB3F8C2DA8}
+		{0E12FD6A-6962-42C8-8BBE-6EC2C9E715F3} = {85DC0233-0213-423E-A1DE-9FFB3F8C2DA8}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1FDB7FBE-44AC-496D-B62E-6B72E242A805}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FDB7FBE-44AC-496D-B62E-6B72E242A805}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FDB7FBE-44AC-496D-B62E-6B72E242A805}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FDB7FBE-44AC-496D-B62E-6B72E242A805}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CC84A94-2240-4DEA-9108-6CC0C94A44CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CC84A94-2240-4DEA-9108-6CC0C94A44CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CC84A94-2240-4DEA-9108-6CC0C94A44CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CC84A94-2240-4DEA-9108-6CC0C94A44CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBC373CC-D526-4F6C-85B7-154011EEF369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBC373CC-D526-4F6C-85B7-154011EEF369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBC373CC-D526-4F6C-85B7-154011EEF369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBC373CC-D526-4F6C-85B7-154011EEF369}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59A7D647-6046-4484-8840-4592CDC0EA6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59A7D647-6046-4484-8840-4592CDC0EA6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59A7D647-6046-4484-8840-4592CDC0EA6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59A7D647-6046-4484-8840-4592CDC0EA6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E12FD6A-6962-42C8-8BBE-6EC2C9E715F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E12FD6A-6962-42C8-8BBE-6EC2C9E715F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E12FD6A-6962-42C8-8BBE-6EC2C9E715F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E12FD6A-6962-42C8-8BBE-6EC2C9E715F3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
