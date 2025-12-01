@@ -1,10 +1,9 @@
-using FluentResults;
-using MediatR;
+using UnifiedApiPlatform.Application.Common.Commands;
+
 
 namespace UnifiedApiPlatform.Application.Features.Auth.Commands.Logout;
 
-public class LogoutCommand : IRequest<Result>
+public class LogoutCommand  : CommandBase
 {
     public string? RefreshToken { get; set; }
-    public string? IpAddress { get; set; }
 }

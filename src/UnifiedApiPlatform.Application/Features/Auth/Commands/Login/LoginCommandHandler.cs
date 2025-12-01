@@ -163,8 +163,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
             UserName = request.Email,
             LoginType = "Password",
             Status = LoginStatus.Success,
-            IpAddress = request.IpAddress,
-            UserAgent = request.UserAgent,
             LoginAt = _clock.GetCurrentInstant()
         };
 
@@ -198,8 +196,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
             LoginType = "Password",
             Status = status,
             FailureReason = reason,
-            IpAddress = request.IpAddress,
-            UserAgent = request.UserAgent,
             LoginAt = _clock.GetCurrentInstant()
         };
 

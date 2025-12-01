@@ -25,6 +25,10 @@ public static class DependencyInjection
 
         // Mapster
         var mappingConfig = TypeAdapterConfig.GlobalSettings;
+        // 配置 Mapster
+        mappingConfig.Default
+            .PreserveReference(true)
+            .IgnoreNullValues(false);
         mappingConfig.Scan(assembly);
         services.AddSingleton(mappingConfig);
         services.AddScoped<IMapper, ServiceMapper>();

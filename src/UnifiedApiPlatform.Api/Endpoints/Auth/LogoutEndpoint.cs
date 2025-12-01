@@ -11,13 +11,10 @@ public class LogoutRequest
     public string? RefreshToken { get; set; }
 }
 
-public class LogoutEndpoint : Endpoint<LogoutRequest>
+public class LogoutEndpoint: CommandEndpointBase<LogoutRequest, LogoutCommand>
 {
-    private readonly IMediator _mediator;
-
-    public LogoutEndpoint(IMediator mediator)
+    public LogoutEndpoint(IMediator mediator) : base(mediator)
     {
-        _mediator = mediator;
     }
 
     public override void Configure()
@@ -28,24 +25,5 @@ public class LogoutEndpoint : Endpoint<LogoutRequest>
             s.Summary = "用户登出";
             s.Description = "登出并撤销刷新令牌";
         });
-    }
-
-    public override async Task HandleAsync(LogoutRequest req, CancellationToken ct)
-    {
-        var command = new LogoutCommand
-        {
-            RefreshToken = req.RefreshToken, IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
-        };
-
-        var result = await _mediator.Send(command, ct);
-
-        if (result.IsSuccess)
-        {
-            await this.SendOkAsync("登出成功", ct);
-        }
-        else
-        {
-            await this.SendErrorAsync(result.Errors.First().Message, ct: ct);
-        }
     }
 }

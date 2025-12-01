@@ -1,6 +1,7 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Serilog;
+using UnifiedApiPlatform.Api.PreProcessors;
 using UnifiedApiPlatform.Infrastructure.Middleware;
 using UnifiedApiPlatform.Infrastructure.Persistence;
 
@@ -40,6 +41,14 @@ public static class WebApplicationExtensions
         // FastEndpoints
         app.UseFastEndpoints(config =>
         {
+            config.Endpoints.Configurator = ep =>
+            {
+                ep.PreProcessors(Order.Before,
+                    typeof(ValidationPreProcessor<>),
+                    typeof(ContextEnricherPreProcessor<>),
+                    typeof(TenantContextPreProcessor<>)
+                );
+            };
             config.Endpoints.RoutePrefix = "api";
             // config.Versioning.Prefix = "v1";
             // config.Versioning.DefaultVersion = 1;

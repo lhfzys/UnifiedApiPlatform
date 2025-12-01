@@ -1,15 +1,12 @@
-using FluentResults;
-using MediatR;
+using UnifiedApiPlatform.Application.Common.Commands;
 using UnifiedApiPlatform.Application.Common.Models;
 
 namespace UnifiedApiPlatform.Application.Features.Auth.Commands.Login;
 
-public class LoginCommand : IRequest<Result<LoginResponse>>
+public class LoginCommand : CommandBase<LoginResponse>
 {
     public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
-    public string? IpAddress { get; set; }
-    public string? UserAgent { get; set; }
 }
 
 public class LoginResponse
