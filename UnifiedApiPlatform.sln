@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnifiedApiPlatform.Domain",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnifiedApiPlatform.Infrastructure", "src\UnifiedApiPlatform.Infrastructure\UnifiedApiPlatform.Infrastructure.csproj", "{59A7D647-6046-4484-8840-4592CDC0EA6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnifiedApiPlatform.Shared", "src\UnifiedApiPlatform.Shared \UnifiedApiPlatform.Shared.csproj", "{0E12FD6A-6962-42C8-8BBE-6EC2C9E715F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnifiedApiPlatform.Shared", "src\UnifiedApiPlatform.Shared\UnifiedApiPlatform.Shared.csproj", "{0E12FD6A-6962-42C8-8BBE-6EC2C9E715F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
