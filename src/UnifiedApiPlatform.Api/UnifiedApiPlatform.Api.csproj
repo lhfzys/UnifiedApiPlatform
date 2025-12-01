@@ -37,6 +37,7 @@
     <ItemGroup>
       <ProjectReference Include="..\UnifiedApiPlatform.Application\UnifiedApiPlatform.Application.csproj" />
       <ProjectReference Include="..\UnifiedApiPlatform.Infrastructure\UnifiedApiPlatform.Infrastructure.csproj" />
+      <ProjectReference Include="..\UnifiedApiPlatform.Shared\UnifiedApiPlatform.Shared.csproj" />
     </ItemGroup>
 
 </Project>

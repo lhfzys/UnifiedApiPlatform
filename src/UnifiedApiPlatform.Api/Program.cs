@@ -21,6 +21,12 @@ try
 
     var app = builder.Build();
 
+    // 数据库初始化（包含种子数据）
+    if (app.Environment.IsDevelopment())
+    {
+        await app.Services.InitializeDatabaseAsync();
+    }
+
     // 配置应用
     app.ConfigureApplication();
 

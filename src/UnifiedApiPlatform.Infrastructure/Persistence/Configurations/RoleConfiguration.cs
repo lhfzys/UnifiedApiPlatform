@@ -27,6 +27,8 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.ConfigureRowVersion();
+
         // 唯一约束：租户内角色名唯一
         builder.HasIndex(r => new { r.TenantId, r.Name })
             .IsUnique()

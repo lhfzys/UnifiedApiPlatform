@@ -12,13 +12,19 @@ public class AnnouncementReadConfiguration : IEntityTypeConfiguration<Announceme
 
         builder.HasKey(ar => new { ar.AnnouncementId, ar.UserId });
 
+        // 关系配置
+        builder.HasOne(ar => ar.Announcement)
+            .WithMany(a => a.ReadRecords)
+            .HasForeignKey(ar => ar.AnnouncementId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(ar => ar.User)
+            .WithMany()
+            .HasForeignKey(ar => ar.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired(false);
+
         // 索引
-        builder.HasIndex(ar => ar.UserId)
-            .HasDatabaseName("ix_announcement_reads_user_id");
-
-        builder.HasIndex(ar => ar.AnnouncementId)
-            .HasDatabaseName("ix_announcement_reads_announcement_id");
-
         builder.HasIndex(ar => ar.ReadAt)
             .HasDatabaseName("ix_announcement_reads_read_at");
     }

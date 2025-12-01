@@ -27,6 +27,7 @@ public class ImportJobConfiguration : IEntityTypeConfiguration<ImportJob>
         builder.Property(ij => ij.ErrorMessage)
             .HasMaxLength(2000);
 
+        builder.ConfigureRowVersion();
         // 索引
         builder.HasIndex(ij => ij.TenantId)
             .HasDatabaseName("ix_import_jobs_tenant_id");

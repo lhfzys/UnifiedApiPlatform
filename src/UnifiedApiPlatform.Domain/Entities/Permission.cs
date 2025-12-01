@@ -1,3 +1,4 @@
+using NodaTime;
 using UnifiedApiPlatform.Domain.Common;
 
 namespace UnifiedApiPlatform.Domain.Entities;
@@ -13,7 +14,7 @@ public class Permission : BaseEntity
     public string? Category { get; set; }
     public string? Description { get; set; }
     public bool IsSystemPermission { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public Instant CreatedAt { get; set; }
 
     // 导航属性
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();

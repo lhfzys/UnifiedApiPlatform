@@ -12,6 +12,20 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
 
         builder.HasKey(ur => new { ur.UserId, ur.RoleId });
 
+        // 关系配置
+        builder.HasOne(ur => ur.User)
+            .WithMany(u => u.UserRoles)
+            .HasForeignKey(ur => ur.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired(false);
+
+        builder.HasOne(ur => ur.Role)
+            .WithMany(r => r.UserRoles)
+            .HasForeignKey(ur => ur.RoleId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired(false);
+
+        // 索引
         builder.HasIndex(ur => ur.UserId)
             .HasDatabaseName("ix_user_roles_user_id");
 

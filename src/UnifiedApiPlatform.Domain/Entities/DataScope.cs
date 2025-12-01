@@ -1,3 +1,4 @@
+using NodaTime;
 using UnifiedApiPlatform.Domain.Common;
 using UnifiedApiPlatform.Domain.Enums;
 
@@ -15,5 +16,5 @@ public class DataScope : BaseEntity
     public DataScopeType ScopeType { get; set; }
     public string? ScopeValue { get; set; } // JSON 格式
     public string? FilterExpression { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public Instant CreatedAt { get; set; }
 }

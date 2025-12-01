@@ -1,3 +1,5 @@
+using NodaTime;
+
 namespace UnifiedApiPlatform.Domain.Entities;
 
 /// <summary>
@@ -11,5 +13,5 @@ public class RolePermission
     public string PermissionCode { get; set; } = null!;
     public Permission Permission { get; set; } = null!;
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public Instant CreatedAt { get; set; }
 }

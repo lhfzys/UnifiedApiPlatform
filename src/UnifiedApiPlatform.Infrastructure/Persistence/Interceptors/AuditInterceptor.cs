@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using NodaTime;
 using UnifiedApiPlatform.Application.Common.Interfaces;
@@ -9,9 +10,6 @@ using UnifiedApiPlatform.Shared.Helpers;
 
 namespace UnifiedApiPlatform.Infrastructure.Persistence.Interceptors;
 
-/// <summary>
-/// 审计拦截器 - 自动记录数据变更
-/// </summary>
 public class AuditInterceptor : SaveChangesInterceptor
 {
     private readonly ICurrentUserService _currentUser;
@@ -44,120 +42,145 @@ public class AuditInterceptor : SaveChangesInterceptor
     {
         if (context == null) return;
 
-        var auditEntries = new List<AuditLog>();
         var now = _clock.GetCurrentInstant();
+        var userId = _currentUser.IsAuthenticated ? _currentUser.UserId : null;
+        var userName = _currentUser.IsAuthenticated ? _currentUser.UserName : "System";
+        var tenantId = _currentUser.IsAuthenticated ? _currentUser.TenantId : "system";
+
+        var auditLogs = new List<AuditLog>();
 
         foreach (var entry in context.ChangeTracker.Entries())
         {
             // 跳过不需要审计的实体
-            if (entry.Entity is AuditLog or OperationLog or LoginLog or RefreshToken)
+            if (ShouldSkipAudit(entry))
                 continue;
 
+            // 跳过未修改的实体
             if (entry.State == EntityState.Detached || entry.State == EntityState.Unchanged)
                 continue;
 
+            // 获取实体的 TenantId
+            var entityTenantId = GetTenantId(entry.Entity, tenantId);
+
             var auditLog = new AuditLog
             {
-                TenantId = GetTenantId(entry.Entity),
-                UserId = _currentUser.UserId,
-                UserName = _currentUser.UserName,
+                TenantId = entityTenantId,
+                UserId = userId != null ? Guid.Parse(userId).ToString() : null,
+                UserName = userName,
                 EntityType = entry.Entity.GetType().Name,
-                EntityId = GetEntityId(entry.Entity),
-                EntityName = GetEntityName(entry.Entity),
-                Action = GetAuditAction(entry.State),
-                Timestamp = now,
-                Success = true
+                EntityId = GetPrimaryKey(entry)?.ToString(),
+                Action = MapEntityStateToAction(entry.State),
+                Timestamp = now
             };
 
-            if (entry.State == EntityState.Added)
+            switch (entry.State)
             {
-                auditLog.NewValues = JsonHelper.Serialize(GetChangedProperties(entry));
+                case EntityState.Added:
+                    auditLog.NewValues = GetNewValues(entry);
+                    break;
+
+                case EntityState.Modified:
+                    auditLog.OldValues = GetOldValues(entry);
+                    auditLog.NewValues = GetNewValues(entry);
+                    auditLog.ChangedProperties = GetChangedProperties(entry);
+                    break;
+
+                case EntityState.Deleted:
+                    auditLog.OldValues = GetOldValues(entry);
+                    break;
             }
-            else if (entry.State == EntityState.Modified)
+
+            auditLogs.Add(auditLog);
+        }
+
+        if (auditLogs.Any())
+        {
+            context.Set<AuditLog>().AddRange(auditLogs);
+        }
+    }
+
+    private static bool ShouldSkipAudit(EntityEntry entry)
+    {
+        var entityType = entry.Entity.GetType();
+
+        // 跳过审计日志本身和其他日志表
+        return entityType == typeof(AuditLog) ||
+               entityType == typeof(OperationLog) ||
+               entityType == typeof(LoginLog) ||
+               entityType == typeof(RefreshToken);
+    }
+
+    private static string GetTenantId(object entity, string defaultTenantId)
+    {
+        // 尝试从 MultiTenantEntity 获取 TenantId
+        if (entity is MultiTenantEntity multiTenantEntity)
+        {
+            return multiTenantEntity.TenantId;
+        }
+
+        // 尝试从其他实体获取 TenantId（如 User, Role 等）
+        var tenantIdProperty = entity.GetType().GetProperty("TenantId");
+        if (tenantIdProperty != null)
+        {
+            var value = tenantIdProperty.GetValue(entity);
+            if (value is string tenantId && !string.IsNullOrEmpty(tenantId))
             {
-                auditLog.OldValues = JsonHelper.Serialize(GetOriginalValues(entry));
-                auditLog.NewValues = JsonHelper.Serialize(GetChangedProperties(entry));
-                auditLog.ChangedProperties = string.Join(",", entry.Properties
-                    .Where(p => p.IsModified)
-                    .Select(p => p.Metadata.Name));
+                return tenantId;
             }
-            else if (entry.State == EntityState.Deleted)
-            {
-                auditLog.OldValues = JsonHelper.Serialize(GetOriginalValues(entry));
-            }
-
-            auditEntries.Add(auditLog);
         }
 
-        // 添加审计日志到数据库
-        if (auditEntries.Any())
+        // Tenant 实体本身，使用其 Identifier 作为 TenantId
+        if (entity is Tenant tenant)
         {
-            context.Set<AuditLog>().AddRange(auditEntries);
-        }
-    }
-
-    private static string? GetTenantId(object entity)
-    {
-        return entity is MultiTenantEntity multiTenantEntity
-            ? multiTenantEntity.TenantId
-            : null;
-    }
-
-    private static string? GetEntityId(object entity)
-    {
-        return entity is BaseEntity baseEntity
-            ? baseEntity.Id.ToString()
-            : null;
-    }
-
-    private static string? GetEntityName(object entity)
-    {
-        // 尝试获取实体的 Name 属性
-        var nameProperty = entity.GetType().GetProperty("Name");
-        if (nameProperty != null)
-        {
-            return nameProperty.GetValue(entity)?.ToString();
+            return tenant.Identifier;
         }
 
-        var titleProperty = entity.GetType().GetProperty("Title");
-        if (titleProperty != null)
-        {
-            return titleProperty.GetValue(entity)?.ToString();
-        }
-
-        return null;
+        // 默认使用 system（用于系统级操作，如租户创建、权限管理等）
+        return defaultTenantId;
     }
 
-    private static AuditAction GetAuditAction(EntityState state)
+    private static AuditAction MapEntityStateToAction(EntityState state)
     {
         return state switch
         {
             EntityState.Added => AuditAction.Create,
             EntityState.Modified => AuditAction.Update,
             EntityState.Deleted => AuditAction.Delete,
-            _ => AuditAction.View
+            _ => AuditAction.Update
         };
     }
 
-    private static Dictionary<string, object?> GetOriginalValues(
-        Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry)
+    private static object? GetPrimaryKey(EntityEntry entry)
     {
-        return entry.Properties
-            .Where(p => !p.Metadata.IsPrimaryKey())
-            .ToDictionary(
-                p => p.Metadata.Name,
-                p => p.OriginalValue
-            );
+        var keyName = entry.Metadata.FindPrimaryKey()?.Properties
+            .Select(x => x.Name)
+            .FirstOrDefault();
+
+        return keyName != null ? entry.Property(keyName).CurrentValue : null;
     }
 
-    private static Dictionary<string, object?> GetChangedProperties(
-        Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry)
+    private static string? GetOldValues(EntityEntry entry)
     {
-        return entry.Properties
-            .Where(p => !p.Metadata.IsPrimaryKey() && (entry.State == EntityState.Added || p.IsModified))
-            .ToDictionary(
-                p => p.Metadata.Name,
-                p => p.CurrentValue
-            );
+        var properties = entry.Properties
+            .Where(p => p.Metadata.ClrType != typeof(byte[]) && !p.Metadata.IsPrimaryKey())
+            .ToDictionary(p => p.Metadata.Name, p => p.OriginalValue);
+
+        return properties.Any() ? JsonHelper.Serialize(properties) : null;
+    }
+
+    private static string? GetNewValues(EntityEntry entry)
+    {
+        var properties = entry.Properties
+            .Where(p => p.Metadata.ClrType != typeof(byte[]) && !p.Metadata.IsPrimaryKey())
+            .ToDictionary(p => p.Metadata.Name, p => p.CurrentValue);
+
+        return properties.Any() ? JsonHelper.Serialize(properties) : null;
+    }
+
+    private static string GetChangedProperties(EntityEntry entry)
+    {
+        return string.Join(", ", entry.Properties
+            .Where(p => p.IsModified && !p.Metadata.IsPrimaryKey())
+            .Select(p => p.Metadata.Name));
     }
 }

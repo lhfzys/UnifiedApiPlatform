@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using UnifiedApiPlatform.Application.Common.Interfaces;
 using UnifiedApiPlatform.Domain.Entities;
 using UnifiedApiPlatform.Infrastructure.Persistence.Configurations;
 
 namespace UnifiedApiPlatform.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext,IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {

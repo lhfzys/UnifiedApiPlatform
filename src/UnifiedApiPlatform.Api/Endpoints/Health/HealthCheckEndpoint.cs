@@ -31,7 +31,7 @@ public class HealthCheckEndpoint : EndpointWithoutRequest<HealthCheckResponse>
 
     public override void Configure()
     {
-        Get("/health");
+        Get("health");
         AllowAnonymous();
         Description(d => d
             .WithTags("Health")

@@ -10,5 +10,5 @@ public abstract class MultiTenantEntity : SoftDeletableEntity
     /// 行版本（乐观并发控制）
     /// </summary>
     [Timestamp]
-    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
+    public byte[]? RowVersion { get; set; }
 }

@@ -31,7 +31,7 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
         builder.Property(o => o.TenantId)
             .IsRequired()
             .HasMaxLength(50);
-
+        builder.ConfigureRowVersion();
         // 唯一约束
         builder.HasIndex(o => new { o.TenantId, o.Code })
             .IsUnique()

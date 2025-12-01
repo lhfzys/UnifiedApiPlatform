@@ -37,6 +37,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.ConfigureRowVersion();
+
         // 唯一约束：租户内邮箱唯一
         builder.HasIndex(u => new { u.TenantId, u.Email })
             .IsUnique()

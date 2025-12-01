@@ -12,10 +12,6 @@ public class EntityAttachmentConfiguration : IEntityTypeConfiguration<EntityAtta
 
         builder.HasKey(ea => ea.Id);
 
-        builder.Property(ea => ea.TenantId)
-            .IsRequired()
-            .HasMaxLength(50);
-
         builder.Property(ea => ea.EntityType)
             .IsRequired()
             .HasMaxLength(100);
@@ -27,24 +23,22 @@ public class EntityAttachmentConfiguration : IEntityTypeConfiguration<EntityAtta
         builder.Property(ea => ea.AttachmentType)
             .HasMaxLength(50);
 
-        builder.Property(ea => ea.Title)
-            .HasMaxLength(200);
-
-        builder.Property(ea => ea.UploadedBy)
+        builder.Property(ea => ea.TenantId)
             .IsRequired()
             .HasMaxLength(50);
 
         // 索引
-        builder.HasIndex(ea => ea.TenantId)
-            .HasDatabaseName("ix_entity_attachments_tenant_id");
-
         builder.HasIndex(ea => new { ea.EntityType, ea.EntityId })
             .HasDatabaseName("ix_entity_attachments_entity");
 
-        builder.HasIndex(ea => ea.FileId)
-            .HasDatabaseName("ix_entity_attachments_file_id");
-
         builder.HasIndex(ea => new { ea.EntityType, ea.EntityId, ea.AttachmentType })
             .HasDatabaseName("ix_entity_attachments_entity_type");
+
+        // 关系配置
+        builder.HasOne(ea => ea.File)
+            .WithMany(f => f.EntityAttachments)
+            .HasForeignKey(ea => ea.FileId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired(false);
     }
 }

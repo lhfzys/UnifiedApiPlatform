@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\UnifiedApiPlatform.Shared \UnifiedApiPlatform.Shared.csproj" />
+      <ProjectReference Include="..\UnifiedApiPlatform.Shared\UnifiedApiPlatform.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>

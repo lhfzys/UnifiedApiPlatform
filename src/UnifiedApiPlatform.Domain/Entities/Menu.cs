@@ -1,3 +1,4 @@
+using NodaTime;
 using UnifiedApiPlatform.Domain.Common;
 using UnifiedApiPlatform.Domain.Enums;
 
@@ -20,8 +21,8 @@ public class Menu : BaseEntity
     public int Sort { get; set; }
     public bool IsVisible { get; set; } = true;
     public bool IsSystemMenu { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; set; }
+    public Instant CreatedAt { get; set; }
+    public Instant? UpdatedAt { get; set; }
 
     // 导航属性
     public Menu? Parent { get; set; }

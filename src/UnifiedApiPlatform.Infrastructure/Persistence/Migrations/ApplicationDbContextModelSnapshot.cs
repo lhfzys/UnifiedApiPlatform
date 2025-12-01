@@ -131,9 +131,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasKey("AnnouncementId", "UserId");
 
-                    b.HasIndex("AnnouncementId")
-                        .HasDatabaseName("ix_announcement_reads_announcement_id");
-
                     b.HasIndex("ReadAt")
                         .HasDatabaseName("ix_announcement_reads_read_at");
 
@@ -276,7 +273,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<Instant>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -499,8 +496,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("tenant_id");
 
                     b.Property<string>("Title")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("title");
 
                     b.Property<Instant>("UploadedAt")
@@ -509,8 +506,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("UploadedBy")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("uploaded_by");
 
                     b.HasKey("Id")
@@ -518,9 +515,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("FileId")
                         .HasDatabaseName("ix_entity_attachments_file_id");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_entity_attachments_tenant_id");
 
                     b.HasIndex("EntityType", "EntityId")
                         .HasDatabaseName("ix_entity_attachments_entity");
@@ -600,7 +594,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea")
                         .HasColumnName("row_version");
@@ -721,7 +714,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea")
                         .HasColumnName("row_version");
@@ -796,13 +788,14 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("created_entity_id");
 
                     b.Property<string>("Data")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("jsonb")
                         .HasColumnName("data");
 
                     b.Property<string>("ErrorMessage")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
                         .HasColumnName("error_message");
 
                     b.Property<Guid>("JobId")
@@ -815,8 +808,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("status");
 
                     b.HasKey("Id")
@@ -936,7 +929,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("component");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<Instant>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -992,7 +985,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("type");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<Instant?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
@@ -1303,7 +1296,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea")
                         .HasColumnName("row_version");
@@ -1373,7 +1365,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("code");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<Instant>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -1530,7 +1522,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea")
                         .HasColumnName("row_version");
@@ -1578,7 +1569,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("menu_id");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<Instant>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -1604,7 +1595,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("permission_code");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<Instant>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -1994,7 +1985,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bytea")
                         .HasColumnName("row_version");
@@ -2115,7 +2105,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("role_id");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<Instant>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -2143,7 +2133,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_announcement_reads_users_user_id");
 
                     b.Navigation("Announcement");
@@ -2181,7 +2170,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .WithMany("EntityAttachments")
                         .HasForeignKey("FileId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_entity_attachments_file_records_file_id");
 
                     b.Navigation("File");
@@ -2193,7 +2181,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .WithMany("Details")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_import_job_details_import_jobs_job_id");
 
                     b.Navigation("Job");
@@ -2361,14 +2348,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_user_roles_roles_role_id");
 
                     b.HasOne("UnifiedApiPlatform.Domain.Entities.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_user_roles_users_user_id");
 
                     b.Navigation("Role");
