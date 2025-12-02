@@ -32,6 +32,17 @@ try
 
     Log.Information("Application configured successfully");
 
+    Log.Information("========== 检查预处理器注册 ==========");
+    var serviceDescriptors = builder.Services
+        .Where(s => s.ServiceType.Name.Contains("PreProcessor"))
+        .ToList();
+    foreach (var descriptor in serviceDescriptors)
+    {
+        Log.Information("已注册的预处理器: {ServiceType} -> {ImplementationType}",
+            descriptor.ServiceType,
+            descriptor.ImplementationType);
+    }
+    Log.Information("========== 预处理器检查结束 ==========");
     app.Run();
 }
 catch (Exception ex)

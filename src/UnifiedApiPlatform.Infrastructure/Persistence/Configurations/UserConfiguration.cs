@@ -37,6 +37,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.Property(u => u.LockedUntil)
+            .HasColumnName("locked_until");
+
         builder.ConfigureRowVersion();
 
         // 唯一约束：租户内邮箱唯一

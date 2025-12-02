@@ -41,17 +41,20 @@ public static class WebApplicationExtensions
         // FastEndpoints
         app.UseFastEndpoints(config =>
         {
-            config.Endpoints.Configurator = ep =>
-            {
-                ep.PreProcessors(Order.Before,
-                    typeof(ValidationPreProcessor<>),
-                    typeof(PermissionAuthorizationPreProcessor<>)
-                );
-            };
             config.Endpoints.RoutePrefix = "api";
             // config.Versioning.Prefix = "v1";
             // config.Versioning.DefaultVersion = 1;
             // config.Versioning.PrependToRoute = true;
+
+            config.Endpoints.Configurator = ep =>
+            {
+                ep.AllowAnonymous();
+                ep.PreProcessors(
+                    Order.Before,
+                    typeof(ValidationPreProcessor<>),
+                    typeof(PermissionAuthorizationPreProcessor<>)
+                );
+            };
         });
 
         if (app.Environment.IsDevelopment())

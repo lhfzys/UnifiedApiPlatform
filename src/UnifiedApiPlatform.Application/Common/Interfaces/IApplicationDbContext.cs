@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using UnifiedApiPlatform.Domain.Entities;
 
 namespace UnifiedApiPlatform.Application.Common.Interfaces;
@@ -34,6 +35,9 @@ public interface IApplicationDbContext
     public DbSet<ImportJob> ImportJobs { get; }
     public DbSet<ImportJobDetail> ImportJobDetails { get; }
     public DbSet<ScheduledJob> ScheduledJobs { get; }
+
+    // EF Core 基础设施
+    DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

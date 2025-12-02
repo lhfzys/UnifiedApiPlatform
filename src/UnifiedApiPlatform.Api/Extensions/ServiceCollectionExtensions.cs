@@ -1,5 +1,7 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using NSwag;
 using UnifiedApiPlatform.Application;
 using UnifiedApiPlatform.Infrastructure;
 
@@ -26,8 +28,8 @@ public static class ServiceCollectionExtensions
                 // 添加 JWT Bearer 认证
                 settings.AddAuth("Bearer", new()
                 {
-                    Type = NSwag.OpenApiSecuritySchemeType.Http,
-                    Scheme = "bearer",
+                    Type = OpenApiSecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
                     BearerFormat = "JWT",
                     Description = "输入 JWT Token，格式：Bearer {token}"
                 });

@@ -43,7 +43,7 @@ public static class FastEndpointPermissionExtensions
     /// </summary>
     public static void Permissions(this EndpointDefinition ep, string permission)
     {
-        ep.Description(x => x.WithMetadata(new PermissionMetadata
+        ep.Options(x => x.WithMetadata(new PermissionMetadata
         {
             Permissions = new[] { permission },
             RequireAll = false
@@ -55,7 +55,7 @@ public static class FastEndpointPermissionExtensions
     /// </summary>
     public static void Permissions(this EndpointDefinition ep, params string[] permissions)
     {
-        ep.Description(x => x.WithMetadata(new PermissionMetadata
+        ep.Options(x => x.WithMetadata(new PermissionMetadata
         {
             Permissions = permissions,
             RequireAll = false
@@ -67,7 +67,7 @@ public static class FastEndpointPermissionExtensions
     /// </summary>
     public static void RequireAllPermissions(this EndpointDefinition ep, params string[] permissions)
     {
-        ep.Description(x => x.WithMetadata(new PermissionMetadata
+        ep.Options(x => x.WithMetadata(new PermissionMetadata
         {
             Permissions = permissions,
             RequireAll = true

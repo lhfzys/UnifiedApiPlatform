@@ -9,7 +9,7 @@ namespace UnifiedApiPlatform.Domain.Entities;
 /// </summary>
 public class User : MultiTenantEntity, IAggregateRoot
 {
-    private readonly List<DomainEvent> _domainEvents = new();
+    private readonly List<DomainEvent> _domainEvents = [];
 
     public string UserName { get; set; } = null!;
     public string Email { get; set; } = null!;
@@ -22,7 +22,7 @@ public class User : MultiTenantEntity, IAggregateRoot
     public string? LastLoginIp { get; set; }
     public Instant? PasswordChangedAt { get; set; }
     public Instant? LockedUntil { get; set; }
-    public int FailedLoginAttempts { get; set; }
+    public int LoginFailureCount { get; set; }
 
     // 组织关联
     public Guid? OrganizationId { get; set; }
@@ -50,46 +50,82 @@ public class User : MultiTenantEntity, IAggregateRoot
         _domainEvents.Clear();
     }
 
-    // 业务方法
+    // ==================== 业务方法 ====================
+
+    /// <summary>
+    /// 修改密码
+    /// </summary>
     public void ChangePassword(string newPasswordHash, IClock clock)
     {
         PasswordHash = newPasswordHash;
         PasswordChangedAt = clock.GetCurrentInstant();
     }
 
-    public void LockAccount(Duration duration, IClock clock)
+    /// <summary>
+    /// 锁定账户（指定分钟数）
+    /// </summary>
+    public void LockAccount(IClock clock, int minutes = 15)
     {
-        LockedUntil = clock.GetCurrentInstant().Plus(duration);
-        ;
-        Status = UserStatus.Locked;
+        LockedUntil = clock.GetCurrentInstant().Plus(Duration.FromMinutes(minutes));
     }
 
+    /// <summary>
+    /// 解锁账户
+    /// </summary>
     public void UnlockAccount()
     {
         LockedUntil = null;
-        FailedLoginAttempts = 0;
-        Status = UserStatus.Active;
+        LoginFailureCount = 0;
     }
 
+    /// <summary>
+    /// 记录登录成功
+    /// </summary>
     public void RecordLoginSuccess(string ipAddress, IClock clock)
     {
         LastLoginAt = clock.GetCurrentInstant();
         LastLoginIp = ipAddress;
-        FailedLoginAttempts = 0;
+        LoginFailureCount = 0;
+        UnlockAccount();
     }
 
+    /// <summary>
+    /// 记录登录失败
+    /// </summary>
     public void RecordLoginFailure(IClock clock)
     {
-        FailedLoginAttempts++;
+        LoginFailureCount++;
 
-        if (FailedLoginAttempts >= 5)
+        // 连续失败 5 次，锁定 15 分钟
+        if (LoginFailureCount >= 5)
         {
-            LockAccount(Duration.FromMinutes(15), clock);
+            LockAccount(clock, 15);  // 参数顺序：clock, minutes
         }
     }
 
+    /// <summary>
+    /// 检查账户是否被锁定
+    /// </summary>
     public bool IsLocked(IClock clock)
     {
         return LockedUntil.HasValue && LockedUntil.Value > clock.GetCurrentInstant();
+    }
+
+    /// <summary>
+    /// 激活账户
+    /// </summary>
+    public void Activate()
+    {
+        IsActive = true;
+        Status = UserStatus.Active;
+    }
+
+    /// <summary>
+    /// 停用账户
+    /// </summary>
+    public void Deactivate()
+    {
+        IsActive = false;
+        Status = UserStatus.Inactive;
     }
 }

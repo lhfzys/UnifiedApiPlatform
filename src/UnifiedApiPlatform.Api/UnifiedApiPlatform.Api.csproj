@@ -40,8 +40,4 @@
       <ProjectReference Include="..\UnifiedApiPlatform.Shared\UnifiedApiPlatform.Shared.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Endpoints\Users\" />
-    </ItemGroup>
-
 </Project>

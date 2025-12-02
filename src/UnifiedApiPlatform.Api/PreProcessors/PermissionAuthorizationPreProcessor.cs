@@ -19,24 +19,37 @@ public class PermissionAuthorizationPreProcessor<TRequest> : IPreProcessor<TRequ
 
     public async Task PreProcessAsync(IPreProcessorContext<TRequest> ctx, CancellationToken ct)
     {
+        var logger = ctx.HttpContext.RequestServices
+            .GetRequiredService<ILogger<PermissionAuthorizationPreProcessor<TRequest>>>();
+        logger.LogInformation("========== PermissionAuthorizationPreProcessor 被调用 ==========");
+        logger.LogInformation("请求类型: {RequestType}", typeof(TRequest).Name);
+        logger.LogInformation("请求路径: {Path}", ctx.HttpContext.Request.Path);
         var endpoint = ctx.HttpContext.GetEndpoint();
         if (endpoint == null)
         {
+            logger.LogWarning("无法获取端点信息");
             return;
         }
 
+        logger.LogInformation("端点名称: {DisplayName}", endpoint.DisplayName);
         // 获取端点的权限元数据
         var permissionMetadata = endpoint.Metadata.GetMetadata<PermissionMetadata>();
         if (permissionMetadata == null)
         {
-            // 没有权限要求，跳过
+            logger.LogInformation("端点没有权限要求，跳过验证");
             return;
         }
 
+        logger.LogInformation("========== 权限验证开始 ==========");
+        logger.LogInformation("需要的权限: {RequiredPermissions}", string.Join(", ", permissionMetadata.Permissions));
+        logger.LogInformation("验证模式: {Mode}", permissionMetadata.RequireAll ? "AND (需要全部)" : "OR (至少一个)");
+
         // 检查用户是否已认证
-        if (!ctx.HttpContext.User.Identity?.IsAuthenticated ?? true)
+        var isAuthenticated = ctx.HttpContext.User.Identity?.IsAuthenticated ?? false;
+        logger.LogInformation("用户是否已认证: {IsAuthenticated}", isAuthenticated);
+        if (!isAuthenticated)
         {
-            _logger.LogWarning("未认证的用户尝试访问需要权限的端点: {Endpoint}", endpoint.DisplayName);
+            logger.LogWarning("❌ 未认证的用户尝试访问需要权限的端点");
 
             await ctx.HttpContext.SendErrorResponseAsync(
                 ErrorCodes.Unauthorized,
@@ -45,6 +58,12 @@ public class PermissionAuthorizationPreProcessor<TRequest> : IPreProcessor<TRequ
             );
             return;
         }
+        // 打印所有 Claims
+        logger.LogInformation("用户的所有 Claims:");
+        foreach (var claim in ctx.HttpContext.User.Claims)
+        {
+            logger.LogInformation("  - Type: {Type}, Value: {Value}", claim.Type, claim.Value);
+        }
 
         // 获取用户的权限 Claims
         var userPermissions = ctx.HttpContext.User.Claims
@@ -52,12 +71,9 @@ public class PermissionAuthorizationPreProcessor<TRequest> : IPreProcessor<TRequ
             .Select(c => c.Value)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        _logger.LogDebug(
-            "用户权限: {UserPermissions}, 需要的权限: {RequiredPermissions}, 验证模式: {Mode}",
-            string.Join(", ", userPermissions),
-            string.Join(", ", permissionMetadata.Permissions),
-            permissionMetadata.RequireAll ? "AND" : "OR"
-        );
+        logger.LogInformation("提取的权限列表 ({Count} 个): {Permissions}",
+            userPermissions.Count,
+            string.Join(", ", userPermissions));
 
         // 验证权限
         bool hasPermission;
@@ -65,27 +81,37 @@ public class PermissionAuthorizationPreProcessor<TRequest> : IPreProcessor<TRequ
         {
             // AND 模式：必须拥有所有权限
             hasPermission = permissionMetadata.Permissions.All(p => userPermissions.Contains(p));
+            _logger.LogInformation("AND 模式验证结果: {Result}", hasPermission);
         }
         else
         {
             // OR 模式：至少拥有一个权限
             hasPermission = permissionMetadata.Permissions.Any(p => userPermissions.Contains(p));
+            _logger.LogInformation("OR 模式验证结果: {Result}", hasPermission);
+
+            // 详细显示哪些权限匹配
+            foreach (var required in permissionMetadata.Permissions)
+            {
+                var has = userPermissions.Contains(required);
+                _logger.LogInformation("  - 权限 '{Permission}': {HasIt}", required, has ? "✓ 拥有" : "✗ 缺少");
+            }
         }
 
         if (!hasPermission)
         {
-            _logger.LogWarning(
-                "用户 {UserId} 权限不足，尝试访问: {Endpoint}, 需要权限: {RequiredPermissions}",
-                ctx.HttpContext.User.FindFirst(CustomClaimTypes.UserId)?.Value,
-                endpoint.DisplayName,
-                string.Join(", ", permissionMetadata.Permissions)
-            );
+            logger.LogWarning("❌ 用户权限不足");
+            logger.LogInformation("========== 权限验证结束（失败）==========");
 
             await ctx.HttpContext.SendErrorResponseAsync(
                 ErrorCodes.PermissionDenied,
                 statusCode: 403,
                 ct: ct
             );
+        }
+        else
+        {
+            _logger.LogInformation("✅ 权限验证通过");
+            _logger.LogInformation("========== 权限验证结束（成功）==========");
         }
     }
 }
