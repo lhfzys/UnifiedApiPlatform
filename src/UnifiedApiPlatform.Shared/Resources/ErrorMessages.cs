@@ -46,13 +46,16 @@ public static class ErrorMessages
             ["ROLE_NAME_ALREADY_EXISTS"] = "角色名称已存在",
             ["ROLE_CANNOT_DELETE_SYSTEM_ROLE"] = "不能删除系统角色",
             ["PERMISSION_NOT_FOUND"] = "权限不存在",
-            ["PERMISSION_DENIED"] = "权限不足",
 
             // 文件相关
             ["FILE_NOT_FOUND"] = "文件不存在",
             ["FILE_SIZE_TOO_LARGE"] = "文件大小超出限制",
             ["FILE_TYPE_NOT_ALLOWED"] = "不支持的文件类型",
             ["FILE_UPLOAD_FAILED"] = "文件上传失败",
+
+            ["UNAUTHORIZED"] = "未授权，请先登录",
+            ["FORBIDDEN"] = "没有权限访问此资源",
+            ["PERMISSION_DENIED"] = "权限不足",
         },
 
         // 英文消息
@@ -94,13 +97,16 @@ public static class ErrorMessages
             ["ROLE_NAME_ALREADY_EXISTS"] = "Role name already exists",
             ["ROLE_CANNOT_DELETE_SYSTEM_ROLE"] = "Cannot delete system role",
             ["PERMISSION_NOT_FOUND"] = "Permission not found",
-            ["PERMISSION_DENIED"] = "Permission denied",
 
             // 文件相关
             ["FILE_NOT_FOUND"] = "File not found",
             ["FILE_SIZE_TOO_LARGE"] = "File size exceeds limit",
             ["FILE_TYPE_NOT_ALLOWED"] = "File type not allowed",
             ["FILE_UPLOAD_FAILED"] = "File upload failed",
+
+            ["UNAUTHORIZED"] = "Unauthorized, please login first",
+            ["FORBIDDEN"] = "You don't have permission to access this resource",
+            ["PERMISSION_DENIED"] = "Permission denied",
         }
     };
 

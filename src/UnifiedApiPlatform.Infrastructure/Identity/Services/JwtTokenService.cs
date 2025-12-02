@@ -54,11 +54,11 @@ public class JwtTokenService : ITokenService
 
         // 添加角色
         tokenClaims.AddRange(claims.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
-        tokenClaims.AddRange(claims.Roles.Select(role => new Claim(CustomClaimTypes.Roles, role)));
+        tokenClaims.AddRange(claims.Roles.Select(role => new Claim(CustomClaimTypes.Role, role)));
 
         // 添加权限
         tokenClaims.AddRange(claims.Permissions.Select(permission =>
-            new Claim(CustomClaimTypes.Permissions, permission)));
+            new Claim(CustomClaimTypes.Permission, permission)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -141,8 +141,8 @@ public class JwtTokenService : ITokenService
             Email = email,
             UserName = userName,
             OrganizationId = principal.FindFirst(CustomClaimTypes.OrganizationId)?.Value,
-            Roles = principal.FindAll(CustomClaimTypes.Roles).Select(c => c.Value).ToList(),
-            Permissions = principal.FindAll(CustomClaimTypes.Permissions).Select(c => c.Value).ToList()
+            Roles = principal.FindAll(CustomClaimTypes.Role).Select(c => c.Value).ToList(),
+            Permissions = principal.FindAll(CustomClaimTypes.Permission).Select(c => c.Value).ToList()
         };
     }
 }

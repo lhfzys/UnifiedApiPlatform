@@ -7,5 +7,6 @@ public interface ICurrentUserService
     string? Email { get; }
     string? UserName { get; }
     bool IsAuthenticated { get; }
-    bool IsSuperAdmin { get; }
+    IEnumerable<string> Roles { get; }
+    IEnumerable<string> Permissions { get; }
 }

@@ -9,7 +9,8 @@ public static class CustomClaimTypes
     public const string TenantId = "tenant_id";
     public const string Email = "email";
     public const string UserName = "username";
-    public const string Roles = "roles";
-    public const string Permissions = "permissions";
+    public const string Role = "role";
+    public const string Permission = "permission";
     public const string OrganizationId = "org_id";
+
 }

@@ -1,6 +1,7 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using UnifiedApiPlatform.Application.Common.Interfaces;
 using UnifiedApiPlatform.Application.Common.Models;
@@ -161,6 +162,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
             TenantId = user.TenantId,
             UserId = userId,
             UserName = request.Email,
+            IpAddress = request.IpAddress ?? "Unknown",
+            UserAgent = request.UserAgent ?? "Unknown",
             LoginType = "Password",
             Status = LoginStatus.Success,
             LoginAt = _clock.GetCurrentInstant()
@@ -193,6 +196,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
             TenantId = tenantId,
             UserId = userId,
             UserName = request.Email,
+            IpAddress = request.IpAddress ?? "Unknown",
+            UserAgent = request.UserAgent ?? "Unknown",
             LoginType = "Password",
             Status = status,
             FailureReason = reason,

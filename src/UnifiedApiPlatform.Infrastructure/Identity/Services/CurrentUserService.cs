@@ -27,6 +27,11 @@ public class CurrentUserService : ICurrentUserService
 
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
-    public bool IsSuperAdmin => _httpContextAccessor.HttpContext?.User
-        ?.IsInRole("SuperAdmin") ?? false;
+    public IEnumerable<string> Roles => _httpContextAccessor.HttpContext?.User
+        .FindAll(CustomClaimTypes.Role)
+        .Select(c => c.Value) ?? Enumerable.Empty<string>();
+
+    public IEnumerable<string> Permissions => _httpContextAccessor.HttpContext?.User
+        .FindAll(CustomClaimTypes.Permission)
+        .Select(c => c.Value) ?? Enumerable.Empty<string>();
 }

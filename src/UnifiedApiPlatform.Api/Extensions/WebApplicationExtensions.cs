@@ -45,8 +45,7 @@ public static class WebApplicationExtensions
             {
                 ep.PreProcessors(Order.Before,
                     typeof(ValidationPreProcessor<>),
-                    typeof(ContextEnricherPreProcessor<>),
-                    typeof(TenantContextPreProcessor<>)
+                    typeof(PermissionAuthorizationPreProcessor<>)
                 );
             };
             config.Endpoints.RoutePrefix = "api";
