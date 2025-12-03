@@ -11,6 +11,7 @@ public static class WebApplicationExtensions
 {
     public static WebApplication ConfigureApplication(this WebApplication app)
     {
+        // 全局异常处理
         app.UseMiddleware<GlobalExceptionMiddleware>();
         // Serilog 请求日志
         app.UseSerilogRequestLogging(options =>
@@ -48,7 +49,6 @@ public static class WebApplicationExtensions
 
             config.Endpoints.Configurator = ep =>
             {
-                ep.AllowAnonymous();
                 ep.PreProcessors(
                     Order.Before,
                     typeof(ValidationPreProcessor<>),

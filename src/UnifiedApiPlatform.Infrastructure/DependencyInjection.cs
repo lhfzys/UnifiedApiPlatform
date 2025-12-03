@@ -76,69 +76,9 @@ public static class DependencyInjection
             options.AddInterceptors(auditInterceptor, softDeleteInterceptor, domainEventInterceptor);
         });
 
-        // JWT 认证
-        AddAuthentication(services, configuration);
-
         // 种子数据服务
         services.AddScoped<DataSeeder>();
 
         return services;
-    }
-
-    private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
-    {
-        var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()!;
-
-        services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false; // 开发环境设为 false
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
-                    ValidateIssuer = true,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidateAudience = true,
-                    ValidAudience = jwtSettings.Audience,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero,
-                    RequireExpirationTime = true
-                };
-
-                options.Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = context =>
-                    {
-                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                        {
-                            context.Response.Headers.Add("Token-Expired", "true");
-                        }
-
-                        return Task.CompletedTask;
-                    },
-                    OnChallenge = context =>
-                    {
-                        context.HandleResponse();
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        context.Response.ContentType = "application/json";
-
-                        var result = System.Text.Json.JsonSerializer.Serialize(new
-                        {
-                            error = "未授权", message = context.Error ?? "您没有访问此资源的权限"
-                        });
-
-                        return context.Response.WriteAsync(result);
-                    }
-                };
-            });
-
-        services.AddAuthorization();
     }
 }
