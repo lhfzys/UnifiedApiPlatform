@@ -26,6 +26,8 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<
     {
         try
         {
+            _logger.LogWarning("用户ID: {request.UserId}", request.UserId);
+            _logger.LogInformation("开始获取用户详情: {request.TenantId}", request.CurrentTenantId);
             // 查询用户（包含关联数据）
             var user = await _context.Users
                 .AsNoTracking()

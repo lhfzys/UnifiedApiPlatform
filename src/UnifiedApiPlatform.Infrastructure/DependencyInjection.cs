@@ -1,11 +1,7 @@
 using System.Reflection;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using NodaTime;
 using UnifiedApiPlatform.Application.Common.Interfaces;
 using UnifiedApiPlatform.Infrastructure.Identity.Services;

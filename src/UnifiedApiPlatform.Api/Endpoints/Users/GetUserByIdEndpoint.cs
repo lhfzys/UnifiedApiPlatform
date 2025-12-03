@@ -1,21 +1,19 @@
 ﻿using FastEndpoints;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using UnifiedApiPlatform.Api.Extensions;
-using UnifiedApiPlatform.Api.PreProcessors;
 using UnifiedApiPlatform.Application.Common.Interfaces;
 using UnifiedApiPlatform.Application.Features.Users.Queries.GetUserById;
 
 namespace UnifiedApiPlatform.Api.Endpoints.Users;
 
+[Authorize]
 public class GetUserByIdEndpoint(IMediator mediator) : Endpoint<GetUserByIdRequest>
 {
     public override void Configure()
     {
         Get("users/{id}");
-        Options(x => x.WithMetadata(new PermissionMetadata
-        {
-            Permissions = [Shared.Constants.Policies.UsersView], RequireAll = false
-        }));
+        Permissions(Shared.Constants.Policies.UsersView);
         Summary(s =>
         {
             s.Summary = "获取用户详情";

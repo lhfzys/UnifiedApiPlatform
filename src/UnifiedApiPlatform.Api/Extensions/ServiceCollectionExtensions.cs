@@ -1,4 +1,5 @@
 using FastEndpoints;
+using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using NSwag;
@@ -12,13 +13,40 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApiServices(this IServiceCollection services,
         IConfiguration configuration)
     {
+
+        var jwtSettings = configuration.GetSection("Jwt");
+        var secretKey = jwtSettings["SecretKey"];
+        var issuer = jwtSettings["Issuer"];
+        var audience = jwtSettings["Audience"];
+
+        if (string.IsNullOrWhiteSpace(secretKey))
+        {
+            throw new InvalidOperationException("Jwt:SecretKey 未在配置中定义");
+        }
+
+        services.AddAuthenticationJwtBearer(s =>
+            {
+                s.SigningKey = secretKey!;
+            },
+            b =>
+            {
+                b.TokenValidationParameters.ValidIssuer = issuer;
+                b.TokenValidationParameters.ValidAudience = audience;
+                b.TokenValidationParameters.ValidateIssuerSigningKey = true;
+                b.TokenValidationParameters.ValidateAudience = true;
+                b.TokenValidationParameters.ValidateLifetime = true;
+                b.TokenValidationParameters.ValidateIssuer = true;
+                b.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+            });
+
+        services.AddAuthorization();
         // 添加 FastEndpoints
         services.AddFastEndpoints();
 
         // 添加 Swagger (FastEndpoints 版本)
         services.SwaggerDocument(options =>
         {
-            options.EnableJWTBearerAuth = false;
+            options.EnableJWTBearerAuth = true;
             options.DocumentSettings = settings =>
             {
                 settings.Title = "UnifiedApiPlatform API";
@@ -47,17 +75,24 @@ public static class ServiceCollectionExtensions
         {
             options.AddPolicy("DefaultCorsPolicy", policy =>
             {
-                policy.WithOrigins(allowedOrigins)
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
+                if (allowedOrigins.Length > 0)
+                {
+                    policy.WithOrigins(allowedOrigins)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                }
+                else
+                {
+                    policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                }
             });
         });
 
-        // 添加 Application 层服务（稍后创建）
+        // 注册业务层与基础设施层
         services.AddApplication();
-
-        // 添加 Infrastructure 层服务
         services.AddInfrastructure(configuration);
 
         return services;

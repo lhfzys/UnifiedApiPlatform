@@ -3,7 +3,7 @@ using FastEndpoints.Swagger;
 using Serilog;
 using UnifiedApiPlatform.Api.PreProcessors;
 using UnifiedApiPlatform.Infrastructure.Middleware;
-using UnifiedApiPlatform.Infrastructure.Persistence;
+using UnifiedApiPlatform.Shared.Constants;
 
 namespace UnifiedApiPlatform.Api.Extensions;
 
@@ -22,7 +22,7 @@ public static class WebApplicationExtensions
             {
                 diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
                 diagnosticContext.Set("RemoteIP", httpContext.Connection.RemoteIpAddress);
-                diagnosticContext.Set("UserAgent", httpContext.Request.Headers["User-Agent"].ToString());
+                diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString());
             };
         });
 
@@ -43,10 +43,8 @@ public static class WebApplicationExtensions
         app.UseFastEndpoints(config =>
         {
             config.Endpoints.RoutePrefix = "api";
-            // config.Versioning.Prefix = "v1";
-            // config.Versioning.DefaultVersion = 1;
-            // config.Versioning.PrependToRoute = true;
 
+            config.Security.PermissionsClaimType = CustomClaimTypes.Permission;
             config.Endpoints.Configurator = ep =>
             {
                 ep.PreProcessors(
