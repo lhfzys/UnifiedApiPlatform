@@ -89,25 +89,25 @@ public class DataSeeder
         var permissions = new List<Permission>
         {
             // 用户管理
-            new() { Code = Policies.UsersView, Name = "查看用户", Category = "用户管理", IsSystemPermission = true },
-            new() { Code = Policies.UsersCreate, Name = "创建用户", Category = "用户管理", IsSystemPermission = true },
-            new() { Code = Policies.UsersUpdate, Name = "更新用户", Category = "用户管理", IsSystemPermission = true },
-            new() { Code = Policies.UsersDelete, Name = "删除用户", Category = "用户管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.UsersView, Name = "查看用户", Category = "用户管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.UsersCreate, Name = "创建用户", Category = "用户管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.UsersUpdate, Name = "更新用户", Category = "用户管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.UsersDelete, Name = "删除用户", Category = "用户管理", IsSystemPermission = true },
 
             // 角色管理
-            new() { Code = Policies.RolesView, Name = "查看角色", Category = "角色管理", IsSystemPermission = true },
-            new() { Code = Policies.RolesCreate, Name = "创建角色", Category = "角色管理", IsSystemPermission = true },
-            new() { Code = Policies.RolesUpdate, Name = "更新角色", Category = "角色管理", IsSystemPermission = true },
-            new() { Code = Policies.RolesDelete, Name = "删除角色", Category = "角色管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.RolesView, Name = "查看角色", Category = "角色管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.RolesCreate, Name = "创建角色", Category = "角色管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.RolesUpdate, Name = "更新角色", Category = "角色管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.RolesDelete, Name = "删除角色", Category = "角色管理", IsSystemPermission = true },
 
             // 权限管理
-            new() { Code = Policies.PermissionsView, Name = "查看权限", Category = "权限管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.PermissionsView, Name = "查看权限", Category = "权限管理", IsSystemPermission = true },
 
             // 菜单管理
-            new() { Code = Policies.MenusView, Name = "查看菜单", Category = "菜单管理", IsSystemPermission = true },
-            new() { Code = Policies.MenusCreate, Name = "创建菜单", Category = "菜单管理", IsSystemPermission = true },
-            new() { Code = Policies.MenusUpdate, Name = "更新菜单", Category = "菜单管理", IsSystemPermission = true },
-            new() { Code = Policies.MenusDelete, Name = "删除菜单", Category = "菜单管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.MenusView, Name = "查看菜单", Category = "菜单管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.MenusCreate, Name = "创建菜单", Category = "菜单管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.MenusUpdate, Name = "更新菜单", Category = "菜单管理", IsSystemPermission = true },
+            new() { Code = PermissionCodes.MenusDelete, Name = "删除菜单", Category = "菜单管理", IsSystemPermission = true },
         };
 
         _context.Permissions.AddRange(permissions);
@@ -241,7 +241,7 @@ public class DataSeeder
                 Type = MenuType.Menu,
                 Path = "/system/users",
                 Component = "system/users/index",
-                PermissionCode = Policies.UsersView,
+                PermissionCode = PermissionCodes.UsersView,
                 Icon = "User",
                 Sort = 1,
                 IsVisible = true,
@@ -257,7 +257,7 @@ public class DataSeeder
                 Type = MenuType.Menu,
                 Path = "/system/roles",
                 Component = "system/roles/index",
-                PermissionCode = Policies.RolesView,
+                PermissionCode = PermissionCodes.RolesView,
                 Icon = "UserGroup",
                 Sort = 2,
                 IsVisible = true,
@@ -273,7 +273,7 @@ public class DataSeeder
                 Type = MenuType.Menu,
                 Path = "/system/menus",
                 Component = "system/menus/index",
-                PermissionCode = Policies.MenusView,
+                PermissionCode = PermissionCodes.MenusView,
                 Icon = "Menu",
                 Sort = 3,
                 IsVisible = true,

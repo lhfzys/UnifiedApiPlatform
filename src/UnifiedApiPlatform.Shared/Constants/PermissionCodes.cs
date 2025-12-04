@@ -3,7 +3,7 @@ namespace UnifiedApiPlatform.Shared.Constants;
 /// <summary>
 /// 授权策略常量
 /// </summary>
-public static class Policies
+public static class PermissionCodes
 {
     // ==================== 用户管理 ====================
     public const string UsersView = "users.view";

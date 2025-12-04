@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using UnifiedApiPlatform.Api.PreProcessors;
 using UnifiedApiPlatform.Application.Common.Models;
 using UnifiedApiPlatform.Application.Features.Users.Queries.GetUsers;
 using UnifiedApiPlatform.Domain.Enums;
+using UnifiedApiPlatform.Shared.Constants;
 
 namespace UnifiedApiPlatform.Api.Endpoints.Users;
 
@@ -15,10 +15,7 @@ public class GetUsersEndpoint(IMediator mediator)
     public override void Configure()
     {
         Get("users");
-        Options(x => x.WithMetadata(new PermissionMetadata
-        {
-            Permissions = [Shared.Constants.Policies.UsersView], RequireAll = false
-        }));
+        Permissions(PermissionCodes.UsersView);
         Summary(s =>
         {
             s.Summary = "获取用户列表";

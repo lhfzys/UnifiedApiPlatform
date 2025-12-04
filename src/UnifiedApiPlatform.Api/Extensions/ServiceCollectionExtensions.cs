@@ -52,15 +52,6 @@ public static class ServiceCollectionExtensions
                 settings.Title = "UnifiedApiPlatform API";
                 settings.Version = "v1";
                 settings.Description = "基于 .NET 9.0 的多租户 RBAC 企业级 API 平台";
-
-                // 添加 JWT Bearer 认证
-                settings.AddAuth("Bearer", new()
-                {
-                    Type = OpenApiSecuritySchemeType.Http,
-                    Scheme = JwtBearerDefaults.AuthenticationScheme,
-                    BearerFormat = "JWT",
-                    Description = "输入 JWT Token，格式：Bearer {token}"
-                });
             };
 
             options.ShortSchemaNames = true;

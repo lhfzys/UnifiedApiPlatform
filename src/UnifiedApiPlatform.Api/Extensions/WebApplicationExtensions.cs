@@ -1,4 +1,5 @@
 using FastEndpoints;
+using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Serilog;
 using UnifiedApiPlatform.Api.PreProcessors;
@@ -43,7 +44,6 @@ public static class WebApplicationExtensions
         app.UseFastEndpoints(config =>
         {
             config.Endpoints.RoutePrefix = "api";
-
             config.Security.PermissionsClaimType = CustomClaimTypes.Permission;
             config.Endpoints.Configurator = ep =>
             {

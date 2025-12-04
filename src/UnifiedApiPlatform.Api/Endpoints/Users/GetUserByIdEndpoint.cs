@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using UnifiedApiPlatform.Api.Extensions;
 using UnifiedApiPlatform.Application.Common.Interfaces;
 using UnifiedApiPlatform.Application.Features.Users.Queries.GetUserById;
+using UnifiedApiPlatform.Shared.Constants;
 
 namespace UnifiedApiPlatform.Api.Endpoints.Users;
 
@@ -13,7 +14,7 @@ public class GetUserByIdEndpoint(IMediator mediator) : Endpoint<GetUserByIdReque
     public override void Configure()
     {
         Get("users/{id}");
-        Permissions(Shared.Constants.Policies.UsersView);
+        Permissions(PermissionCodes.UsersView);
         Summary(s =>
         {
             s.Summary = "获取用户详情";
