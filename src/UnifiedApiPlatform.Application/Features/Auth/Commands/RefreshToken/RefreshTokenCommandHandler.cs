@@ -33,7 +33,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
 
         if (refreshToken == null)
         {
-            return Result.Fail<TokenResult>(ErrorCodes.RefreshTokenInvalid);
+            return Result.Fail<TokenResult>(ErrorCodes.TokenInvalid);
         }
 
         // 2. 获取用户信息（包含角色和权限）

@@ -42,7 +42,7 @@ public class GlobalExceptionMiddleware
 
         var response = ApiResponse.Fail(
             ErrorCodes.InternalServerError,
-            ErrorMessages.GetMessage(ErrorCodes.InternalServerError, culture)
+            ErrorMessages.GetMessage(ErrorCodes.InternalServerError)
         );
 
         response.TraceId = context.TraceIdentifier;

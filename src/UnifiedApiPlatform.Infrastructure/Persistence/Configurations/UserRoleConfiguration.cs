@@ -12,6 +12,18 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
 
         builder.HasKey(ur => new { ur.UserId, ur.RoleId });
 
+        // 配置审计字段（从 AuditableEntity 继承）
+        builder.Property(ur => ur.CreatedAt)
+            .IsRequired();
+
+        builder.Property(ur => ur.CreatedBy)
+            .HasMaxLength(50);
+
+        builder.Property(ur => ur.UpdatedAt);
+
+        builder.Property(ur => ur.UpdatedBy)
+            .HasMaxLength(50);
+
         // 关系配置
         builder.HasOne(ur => ur.User)
             .WithMany(u => u.UserRoles)

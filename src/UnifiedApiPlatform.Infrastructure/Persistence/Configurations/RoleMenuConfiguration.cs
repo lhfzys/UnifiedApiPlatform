@@ -12,6 +12,18 @@ public class RoleMenuConfiguration : IEntityTypeConfiguration<RoleMenu>
 
         builder.HasKey(rm => new { rm.RoleId, rm.MenuId });
 
+        // 配置审计字段（从 AuditableEntity 继承）
+        builder.Property(ur => ur.CreatedAt)
+            .IsRequired();
+
+        builder.Property(ur => ur.CreatedBy)
+            .HasMaxLength(50);
+
+        builder.Property(ur => ur.UpdatedAt);
+
+        builder.Property(ur => ur.UpdatedBy)
+            .HasMaxLength(50);
+
         builder.HasIndex(rm => rm.RoleId)
             .HasDatabaseName("ix_role_menus_role_id");
 

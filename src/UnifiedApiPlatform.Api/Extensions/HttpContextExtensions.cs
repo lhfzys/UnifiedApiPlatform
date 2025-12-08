@@ -19,7 +19,7 @@ public static class HttpContextExtensions
     {
         // 获取当前语言
         var culture = CultureHelper.GetCurrentCulture(context);
-        var message = ErrorMessages.GetMessage(errorCode, culture);
+        var message = ErrorMessages.GetMessage(errorCode);
 
         // 构建统一响应
         var response = ApiResponse.Fail(errorCode, message, validationErrors);

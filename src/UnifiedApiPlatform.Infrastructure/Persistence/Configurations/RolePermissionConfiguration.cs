@@ -12,6 +12,18 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
 
         builder.HasKey(rp => new { rp.RoleId, rp.PermissionCode });
 
+        // 配置审计字段（从 AuditableEntity 继承）
+        builder.Property(ur => ur.CreatedAt)
+            .IsRequired();
+
+        builder.Property(ur => ur.CreatedBy)
+            .HasMaxLength(50);
+
+        builder.Property(ur => ur.UpdatedAt);
+
+        builder.Property(ur => ur.UpdatedBy)
+            .HasMaxLength(50);
+
         builder.Property(rp => rp.PermissionCode)
             .IsRequired()
             .HasMaxLength(100);
