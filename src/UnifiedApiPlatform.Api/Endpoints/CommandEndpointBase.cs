@@ -24,7 +24,7 @@ public abstract class CommandEndpointBase<TRequest, TCommand, TResponse> : Endpo
         // 自动映射 Request -> Command
         var command = req.Adapt<TCommand>();
 
-        // ✅ 在映射后注入 HTTP 上下文信息
+        // 在映射后注入 HTTP 上下文信息
         command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
         command.UserAgent = HttpContext.Request.Headers["User-Agent"].FirstOrDefault() ?? "Unknown";
         command.TraceId = HttpContext.TraceIdentifier;
@@ -55,7 +55,7 @@ public abstract class CommandEndpointBase<TRequest, TCommand> : Endpoint<TReques
         // 自动映射 Request -> Command
         var command = req.Adapt<TCommand>();
 
-        // ✅ 在映射后注入 HTTP 上下文信息
+        // 在映射后注入 HTTP 上下文信息
         command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
         command.UserAgent = HttpContext.Request.Headers["User-Agent"].FirstOrDefault() ?? "Unknown";
         command.TraceId = HttpContext.TraceIdentifier;
@@ -64,14 +64,6 @@ public abstract class CommandEndpointBase<TRequest, TCommand> : Endpoint<TReques
         var result = await Mediator.Send(command, ct);
 
         // 自动发送响应
-        if (result.IsSuccess)
-        {
-            await this.SendOkAsync(ct: ct);
-        }
-        else
-        {
-            var firstError = result.Errors.First();
-            await this.SendErrorAsync(firstError.Message, ct: ct);
-        }
+        await this.SendResultAsync(result, ct);
     }
 }
