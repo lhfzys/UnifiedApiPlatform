@@ -3,7 +3,7 @@ using MediatR;
 
 namespace UnifiedApiPlatform.Application.Common.Commands;
 
-// <summary>
+/// <summary>
 /// 命令基类（无返回值）
 /// </summary>
 public abstract class CommandBase : IRequest<Result>
