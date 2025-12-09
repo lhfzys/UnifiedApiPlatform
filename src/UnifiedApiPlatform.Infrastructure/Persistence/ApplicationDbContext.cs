@@ -21,16 +21,12 @@ public class ApplicationDbContext : DbContext,IApplicationDbContext
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<RoleMenu> RoleMenus => Set<RoleMenu>();
-    public DbSet<DataScope> DataScopes => Set<DataScope>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<OperationLog> OperationLogs => Set<OperationLog>();
     public DbSet<LoginLog> LoginLogs => Set<LoginLog>();
     public DbSet<FileRecord> FileRecords => Set<FileRecord>();
     public DbSet<EntityAttachment> EntityAttachments => Set<EntityAttachment>();
-    public DbSet<Notification> Notifications => Set<Notification>();
-    public DbSet<NotificationRecipient> NotificationRecipients => Set<NotificationRecipient>();
-    public DbSet<UserNotificationSettings> UserNotificationSettings => Set<UserNotificationSettings>();
     public DbSet<DictionaryCategory> DictionaryCategories => Set<DictionaryCategory>();
     public DbSet<DictionaryItem> DictionaryItems => Set<DictionaryItem>();
     public DbSet<SystemSettings> SystemSettings => Set<SystemSettings>();

@@ -62,6 +62,7 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
         builder.Property(al => al.ErrorMessage)
             .HasMaxLength(2000);
 
+        builder.ConfigureRowVersion();
         // 索引
         builder.HasIndex(al => al.TenantId)
             .HasDatabaseName("ix_audit_logs_tenant_id");

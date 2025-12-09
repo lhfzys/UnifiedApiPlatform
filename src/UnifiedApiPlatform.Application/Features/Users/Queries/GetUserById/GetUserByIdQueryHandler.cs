@@ -49,7 +49,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<
             // 获取所有权限（去重）
             var permissions = user.UserRoles
                 .SelectMany(ur => ur.Role.RolePermissions)
-                .Select(rp => rp.Permission.Code)
+                .Select(rp => rp.PermissionCode)
                 .Distinct()
                 .OrderBy(p => p)
                 .ToList();

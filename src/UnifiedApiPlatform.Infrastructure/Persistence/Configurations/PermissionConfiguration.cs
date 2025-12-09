@@ -21,24 +21,32 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
             .HasMaxLength(200);
 
         builder.Property(p => p.Category)
+            .IsRequired()
             .HasMaxLength(100);
+
+        builder.Property(p => p.IsSystemPermission)
+            .IsRequired()
+            .HasDefaultValue(false);
 
         builder.Property(p => p.Description)
             .HasMaxLength(500);
 
-        builder.Property(p => p.TenantId)
-            .HasMaxLength(50);
+        // 配置审计字段
+        builder.Property(p => p.CreatedAt).IsRequired();
+        builder.Property(p => p.CreatedBy).HasMaxLength(50);
+        builder.Property(p => p.UpdatedAt);
+        builder.Property(p => p.UpdatedBy).HasMaxLength(50);
 
-        // 唯一约束：权限代码全局唯一
-        builder.HasIndex(p => p.Code)
-            .IsUnique()
-            .HasDatabaseName("ix_permissions_code");
+        // 软删除
+        builder.Property(p => p.IsDeleted).IsRequired().HasDefaultValue(false);
+        builder.Property(p => p.DeletedAt);
+        builder.Property(p => p.DeletedBy).HasMaxLength(50);
 
-        // 关系配置
-        builder.HasMany(p => p.RolePermissions)
-            .WithOne(rp => rp.Permission)
-            .HasForeignKey(rp => rp.PermissionCode)
-            .HasPrincipalKey(p => p.Code)
-            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(p => p.Category)
+            .HasDatabaseName("ix_permissions_category");
+
+        // 全局查询过滤器（软删除）
+        builder.HasQueryFilter(p => !p.IsDeleted);
     }
 }

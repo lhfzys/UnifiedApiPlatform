@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -38,7 +37,9 @@ public class DataSeeder
             await SeedPermissionsAsync();
             await SeedRolesAsync();
             await SeedUsersAsync();
+            await SeedRolePermissionsAsync();
             await SeedMenusAsync();
+
 
             _logger.LogInformation("种子数据初始化完成！");
         }
@@ -49,11 +50,14 @@ public class DataSeeder
         }
     }
 
+    /// <summary>
+    /// 创建默认租户
+    /// </summary>
     private async Task SeedTenantsAsync()
     {
         if (await _context.Tenants.AnyAsync())
         {
-            _logger.LogInformation("租户数据已存在，跳过初始化");
+            _logger.LogInformation("租户已存在，跳过种子数据");
             return;
         }
 
@@ -75,132 +79,188 @@ public class DataSeeder
         _context.Tenants.Add(tenant);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("已创建默认租户：{Identifier}", tenant.Identifier);
+        _logger.LogInformation("已创建默认租户：{TenantName}", tenant.Name);
     }
 
+    /// <summary>
+    /// 同步权限定义到数据库
+    /// </summary>
     private async Task SeedPermissionsAsync()
     {
-        if (await _context.Permissions.AnyAsync())
+        _logger.LogInformation("开始同步权限定义...");
+
+        var definitions = PermissionDefinitions.All;
+        _logger.LogInformation("共 {Count} 个权限定义", definitions.Count);
+
+        var existingPermissions = await _context.Permissions
+            .Where(p => p.TenantId == "default")
+            .ToListAsync();
+
+        _logger.LogInformation("数据库中已有 {Count} 个权限", existingPermissions.Count);
+
+        var now = _clock.GetCurrentInstant();
+        var addedCount = 0;
+        var updatedCount = 0;
+
+        foreach (var definition in definitions)
         {
-            _logger.LogInformation("权限数据已存在，跳过初始化");
-            return;
+            var existing = existingPermissions.FirstOrDefault(p => p.Code == definition.Code);
+
+            if (existing == null)
+            {
+                var permission = new Permission
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = "default",
+                    Code = definition.Code,
+                    Name = definition.Name,
+                    Category = definition.Category,
+                    Description = definition.Description,
+                    IsSystemPermission = true,
+                    CreatedAt = now
+                };
+
+                _context.Permissions.Add(permission);
+                addedCount++;
+
+                _logger.LogDebug("添加新权限: {Code}", definition.Code);
+            }
+            else
+            {
+                var changed = false;
+
+                if (existing.Name != definition.Name)
+                {
+                    existing.Name = definition.Name;
+                    changed = true;
+                }
+
+                if (existing.Category != definition.Category)
+                {
+                    existing.Category = definition.Category;
+                    changed = true;
+                }
+
+                if (existing.Description != definition.Description)
+                {
+                    existing.Description = definition.Description;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    existing.UpdatedAt = now;
+                    updatedCount++;
+                    _logger.LogDebug("更新权限: {Code}", definition.Code);
+                }
+            }
         }
 
-        var permissions = new List<Permission>
-        {
-            // 用户管理
-            new() { Code = PermissionCodes.UsersView, Name = "查看用户", Category = "用户管理", IsSystemPermission = true },
-            new() { Code = PermissionCodes.UsersCreate, Name = "创建用户", Category = "用户管理", IsSystemPermission = true },
-            new() { Code = PermissionCodes.UsersUpdate, Name = "更新用户", Category = "用户管理", IsSystemPermission = true },
-            new() { Code = PermissionCodes.UsersDelete, Name = "删除用户", Category = "用户管理", IsSystemPermission = true },
-
-            // 角色管理
-            new() { Code = PermissionCodes.RolesView, Name = "查看角色", Category = "角色管理", IsSystemPermission = true },
-            new() { Code = PermissionCodes.RolesCreate, Name = "创建角色", Category = "角色管理", IsSystemPermission = true },
-            new() { Code = PermissionCodes.RolesUpdate, Name = "更新角色", Category = "角色管理", IsSystemPermission = true },
-            new() { Code = PermissionCodes.RolesDelete, Name = "删除角色", Category = "角色管理", IsSystemPermission = true },
-
-            // 权限管理
-            new() { Code = PermissionCodes.PermissionsView, Name = "查看权限", Category = "权限管理", IsSystemPermission = true },
-
-            // 菜单管理
-            new() { Code = PermissionCodes.MenusView, Name = "查看菜单", Category = "菜单管理", IsSystemPermission = true },
-            new() { Code = PermissionCodes.MenusCreate, Name = "创建菜单", Category = "菜单管理", IsSystemPermission = true },
-            new() { Code = PermissionCodes.MenusUpdate, Name = "更新菜单", Category = "菜单管理", IsSystemPermission = true },
-            new() { Code = PermissionCodes.MenusDelete, Name = "删除菜单", Category = "菜单管理", IsSystemPermission = true },
-        };
-
-        _context.Permissions.AddRange(permissions);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("已创建 {Count} 个系统权限", permissions.Count);
+        _logger.LogInformation(
+            "权限同步完成: 新增 {Added} 个, 更新 {Updated} 个",
+            addedCount, updatedCount);
     }
 
+    /// <summary>
+    /// 创建默认角色
+    /// </summary>
     private async Task SeedRolesAsync()
     {
-        var tenant = await _context.Tenants.FirstAsync(t => t.Identifier == "default");
-
-        if (await _context.Roles.AnyAsync(r => r.TenantId == tenant.Identifier))
+        if (await _context.Roles.AnyAsync())
         {
-            _logger.LogInformation("角色数据已存在，跳过初始化");
+            _logger.LogInformation("角色已存在，跳过种子数据");
             return;
         }
 
         var now = _clock.GetCurrentInstant();
 
-        // 创建超级管理员角色
-        var adminRole = new Role
+        var roles = new[]
         {
-            Id = Guid.NewGuid(),
-            TenantId = tenant.Identifier,
-            Name = "SuperAdmin",
-            DisplayName = "超级管理员",
-            Description = "拥有所有权限的超级管理员",
-            IsSystemRole = true,
-            Sort = 1,
-            CreatedAt = now
+            new Role
+            {
+                Id = Guid.NewGuid(),
+                TenantId = "default",
+                Name = "SuperAdmin",
+                DisplayName = "超级管理员",
+                Description = "拥有系统所有权限",
+                IsSystemRole = true,
+                CreatedAt = now
+            },
+            new Role
+            {
+                Id = Guid.NewGuid(),
+                TenantId = "default",
+                Name = "Admin",
+                DisplayName = "管理员",
+                Description = "拥有大部分管理权限",
+                IsSystemRole = true,
+                CreatedAt = now
+            },
+            new Role
+            {
+                Id = Guid.NewGuid(),
+                TenantId = "default",
+                Name = "User",
+                DisplayName = "普通用户",
+                Description = "基本用户权限",
+                IsSystemRole = false,
+                CreatedAt = now
+            }
         };
 
-        _context.Roles.Add(adminRole);
+        await _context.Roles.AddRangeAsync(roles);
         await _context.SaveChangesAsync();
 
-        // 为超级管理员分配所有权限
-        var allPermissions = await _context.Permissions.ToListAsync();
-        var rolePermissions = allPermissions.Select(p => new RolePermission
-        {
-            RoleId = adminRole.Id,
-            PermissionCode = p.Code,
-            CreatedAt = now
-        }).ToList();
-
-        _context.RolePermissions.AddRange(rolePermissions);
-        await _context.SaveChangesAsync();
-
-        _logger.LogInformation("已创建超级管理员角色并分配 {Count} 个权限", allPermissions.Count);
+        _logger.LogInformation("创建 {Count} 个默认角色", roles.Length);
     }
 
+    /// <summary>
+    /// 创建默认用户
+    /// </summary>
     private async Task SeedUsersAsync()
     {
-        var tenant = await _context.Tenants.FirstAsync(t => t.Identifier == "default");
-
-        if (await _context.Users.AnyAsync(u => u.TenantId == tenant.Identifier))
+        if (await _context.Users.AnyAsync())
         {
-            _logger.LogInformation("用户数据已存在，跳过初始化");
+            _logger.LogInformation("用户已存在，跳过种子数据");
             return;
         }
 
         var now = _clock.GetCurrentInstant();
-        var adminRole = await _context.Roles.FirstAsync(r => r.Name == "SuperAdmin" && r.TenantId == tenant.Identifier);
+        var superAdminRole = await _context.Roles.FirstAsync(r => r.Name == "SuperAdmin");
 
-        var adminUser = new User
+        var admin = new User
         {
             Id = Guid.NewGuid(),
-            TenantId = tenant.Identifier,
+            TenantId = "default",
             UserName = "admin",
             Email = "admin@example.com",
             PasswordHash = _passwordHasher.Hash("Admin@123"),
             Status = UserStatus.Active,
             IsActive = true,
+            IsSystemUser = true,
             CreatedAt = now
         };
 
-        _context.Users.Add(adminUser);
+        await _context.Users.AddAsync(admin);
         await _context.SaveChangesAsync();
 
-        // 分配角色
         var userRole = new UserRole
         {
-            UserId = adminUser.Id,
-            RoleId = adminRole.Id,
-            CreatedAt = now
+            UserId = admin.Id,
+            RoleId = superAdminRole.Id
         };
 
-        _context.UserRoles.Add(userRole);
+        await _context.UserRoles.AddAsync(userRole);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("已创建管理员用户：{Email}", adminUser.Email);
+        _logger.LogInformation("创建默认用户: {UserName}", admin.UserName);
     }
 
+    /// <summary>
+    /// 创建默认菜单
+    /// </summary>
     private async Task SeedMenusAsync()
     {
         if (await _context.Menus.AnyAsync())
@@ -212,79 +272,116 @@ public class DataSeeder
         var now = _clock.GetCurrentInstant();
         var menus = new List<Menu>
         {
-            // 系统管理
-            new()
+            // ==================== 一级菜单 ====================
+            new Menu
             {
                 Id = Guid.NewGuid(),
-                Name = "system",
-                Title = "系统管理",
-                Type = MenuType.Directory,
-                Icon = "Settings",
-                Sort = 100,
+                TenantId = "default",
+                Code = "system",
+                Name = "系统管理",
+                Icon = "settings",
+                Path = "/system",
+                Type = MenuType.Menu,
+                SortOrder = 1000,
                 IsVisible = true,
-                IsSystemMenu = true,
+                IsActive = true,
+                CreatedAt = now
+            },
+            new Menu
+            {
+                Id = Guid.NewGuid(),
+                TenantId = "default",
+                Code = "users",
+                Name = "用户管理",
+                Icon = "user",
+                Path = "/system/users",
+                Type = MenuType.Menu,
+                ParentId = null, // 暂时为 null，稍后关联
+                SortOrder = 1001,
+                IsVisible = true,
+                IsActive = true,
+                PermissionCode = PermissionCodes.UsersView,
+                CreatedAt = now
+            },
+            new Menu
+            {
+                Id = Guid.NewGuid(),
+                TenantId = "default",
+                Code = "roles",
+                Name = "角色管理",
+                Icon = "team",
+                Path = "/system/roles",
+                Type = MenuType.Menu,
+                SortOrder = 1002,
+                IsVisible = true,
+                IsActive = true,
+                PermissionCode = PermissionCodes.RolesView,
                 CreatedAt = now
             }
         };
 
-        var systemMenu = menus.First();
+        // 设置父级关系
+        var systemMenu = menus.First(m => m.Code == "system");
+        var usersMenu = menus.First(m => m.Code == "users");
+        var rolesMenu = menus.First(m => m.Code == "roles");
 
-        // 系统管理子菜单
-        menus.AddRange(new[]
-        {
-            new Menu
-            {
-                Id = Guid.NewGuid(),
-                ParentId = systemMenu.Id,
-                Name = "users",
-                Title = "用户管理",
-                Type = MenuType.Menu,
-                Path = "/system/users",
-                Component = "system/users/index",
-                PermissionCode = PermissionCodes.UsersView,
-                Icon = "User",
-                Sort = 1,
-                IsVisible = true,
-                IsSystemMenu = true,
-                CreatedAt = now
-            },
-            new Menu
-            {
-                Id = Guid.NewGuid(),
-                ParentId = systemMenu.Id,
-                Name = "roles",
-                Title = "角色管理",
-                Type = MenuType.Menu,
-                Path = "/system/roles",
-                Component = "system/roles/index",
-                PermissionCode = PermissionCodes.RolesView,
-                Icon = "UserGroup",
-                Sort = 2,
-                IsVisible = true,
-                IsSystemMenu = true,
-                CreatedAt = now
-            },
-            new Menu
-            {
-                Id = Guid.NewGuid(),
-                ParentId = systemMenu.Id,
-                Name = "menus",
-                Title = "菜单管理",
-                Type = MenuType.Menu,
-                Path = "/system/menus",
-                Component = "system/menus/index",
-                PermissionCode = PermissionCodes.MenusView,
-                Icon = "Menu",
-                Sort = 3,
-                IsVisible = true,
-                IsSystemMenu = true,
-                CreatedAt = now
-            }
-        });
+        usersMenu.ParentId = systemMenu.Id;
+        rolesMenu.ParentId = systemMenu.Id;
 
-        _context.Menus.AddRange(menus);
+        await _context.Menus.AddRangeAsync(menus);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("已创建 {Count} 个系统菜单", menus.Count);
+        _logger.LogInformation("创建 {Count} 个默认菜单", menus.Count);
+
+        // 给 SuperAdmin 分配所有菜单
+        var superAdminRole = await _context.Roles.FirstAsync(r => r.Name == "SuperAdmin");
+
+        foreach (var menu in menus)
+        {
+            var roleMenu = new RoleMenu
+            {
+                RoleId = superAdminRole.Id,
+                MenuId = menu.Id
+            };
+            _context.RoleMenus.Add(roleMenu);
+        }
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("为 SuperAdmin 角色分配 {Count} 个菜单", menus.Count);
+    }
+
+    /// <summary>
+    /// 分配权限给角色
+    /// </summary>
+    private async Task SeedRolePermissionsAsync()
+    {
+        var superAdminRole = await _context.Roles
+            .Include(r => r.RolePermissions)
+            .FirstAsync(r => r.Name == "SuperAdmin");
+
+        if (superAdminRole.RolePermissions.Any())
+        {
+            _logger.LogInformation("SuperAdmin 角色已有权限，跳过分配");
+            return;
+        }
+
+        var allPermissions = await _context.Permissions
+            .Where(p => p.TenantId == "default")
+            .ToListAsync();
+
+        foreach (var permission in allPermissions)
+        {
+            var rolePermission = new RolePermission
+            {
+                RoleId = superAdminRole.Id,
+                PermissionCode = permission.Code
+            };
+            _context.RolePermissions.Add(rolePermission);
+        }
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("为 SuperAdmin 角色分配 {Count} 个权限", allPermissions.Count);
     }
 }

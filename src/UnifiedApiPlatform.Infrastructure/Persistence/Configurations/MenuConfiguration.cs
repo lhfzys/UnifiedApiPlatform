@@ -16,10 +16,6 @@ public class MenuConfiguration : IEntityTypeConfiguration<Menu>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(m => m.Title)
-            .IsRequired()
-            .HasMaxLength(200);
-
         builder.Property(m => m.PermissionCode)
             .HasMaxLength(100);
 

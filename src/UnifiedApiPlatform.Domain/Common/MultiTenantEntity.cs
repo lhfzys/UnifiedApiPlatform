@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace UnifiedApiPlatform.Domain.Common;
 
+/// <summary>
+/// 多租户实体基类
+/// </summary>
 public abstract class MultiTenantEntity : SoftDeletableEntity
 {
     public string TenantId { get; set; } = null!;

@@ -21,6 +21,4 @@ public class UserInfo
     public string UserName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string? Avatar { get; set; }
-    public List<string> Roles { get; set; } = new();
-    public List<string> Permissions { get; set; } = new();
 }

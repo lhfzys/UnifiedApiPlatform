@@ -10,23 +10,19 @@ public static class DatabaseExtensions
     {
         using var scope = services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<DataSeeder>>();
+        var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<ApplicationDbContext>>();
 
         try
         {
-            // 应用待处理的迁移
-            var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
-            var migrations = pendingMigrations as string[] ?? pendingMigrations.ToArray();
-            if (migrations.Length != 0)
-            {
-                logger.LogInformation("正在应用 {Count} 个待处理的迁移...", migrations.Length);
-                await context.Database.MigrateAsync();
-                logger.LogInformation("迁移应用完成");
-            }
+            // 应用迁移
+            await context.Database.MigrateAsync();
+            logger.LogInformation("数据库迁移完成");
 
             // 执行种子数据
-            var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
             await seeder.SeedAsync();
+
+            logger.LogInformation("数据库初始化完成");
         }
         catch (Exception ex)
         {

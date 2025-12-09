@@ -62,6 +62,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("publisher_id");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<string>("TargetAudience")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -211,6 +217,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("request_path");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<bool>("Success")
                         .HasColumnType("boolean")
                         .HasColumnName("success");
@@ -266,53 +278,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("audit_logs", (string)null);
                 });
 
-            modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.DataScope", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Instant>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("FilterExpression")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("filter_expression");
-
-                    b.Property<string>("ResourceType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("resource_type");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("role_id");
-
-                    b.Property<int>("ScopeType")
-                        .HasColumnType("integer")
-                        .HasColumnName("scope_type");
-
-                    b.Property<string>("ScopeValue")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("scope_value");
-
-                    b.HasKey("Id")
-                        .HasName("pk_data_scopes");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_data_scopes_role_id");
-
-                    b.HasIndex("RoleId", "ResourceType")
-                        .HasDatabaseName("ix_data_scopes_role_resource");
-
-                    b.ToTable("data_scopes", (string)null);
-                });
-
             modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.DictionaryCategory", b =>
                 {
                     b.Property<Guid>("Id")
@@ -348,6 +313,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
 
                     b.Property<int>("Sort")
                         .HasColumnType("integer")
@@ -421,6 +392,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("parent_id");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<int>("Sort")
                         .HasColumnType("integer")
                         .HasColumnName("sort");
@@ -484,6 +461,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsMain")
                         .HasColumnType("boolean")
                         .HasColumnName("is_main");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
 
                     b.Property<int>("Sort")
                         .HasColumnType("integer")
@@ -806,6 +789,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("row_number");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -868,6 +857,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("logout_at");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer")
                         .HasColumnName("status");
@@ -924,6 +919,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("code");
+
                     b.Property<string>("Component")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
@@ -933,10 +934,19 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("created_by");
+
                     b.Property<string>("Icon")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("icon");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
 
                     b.Property<bool>("IsSystemMenu")
                         .HasColumnType("boolean")
@@ -966,20 +976,20 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("permission_code");
 
-                    b.Property<int>("Sort")
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
+                    b.Property<int>("SortOrder")
                         .HasColumnType("integer")
-                        .HasColumnName("sort");
+                        .HasColumnName("sort_order");
 
                     b.Property<string>("TenantId")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("tenant_id");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("title");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer")
@@ -988,6 +998,11 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Instant?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("updated_by");
 
                     b.HasKey("Id")
                         .HasName("pk_menus");
@@ -999,127 +1014,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_menus_tenant_name");
 
                     b.ToTable("menus", (string)null);
-                });
-
-            modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ActionText")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("action_text");
-
-                    b.Property<string>("ActionUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("action_url");
-
-                    b.Property<string>("Category")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("category");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("content");
-
-                    b.Property<Instant>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("RelatedEntityId")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("related_entity_id");
-
-                    b.Property<string>("RelatedEntityType")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("related_entity_type");
-
-                    b.Property<Guid?>("SenderId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("sender_id");
-
-                    b.Property<string>("SenderName")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("sender_name");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("title");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer")
-                        .HasColumnName("type");
-
-                    b.HasKey("Id")
-                        .HasName("pk_notifications");
-
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("ix_notifications_created_at");
-
-                    b.HasIndex("SenderId")
-                        .HasDatabaseName("ix_notifications_sender_id");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_notifications_tenant_id");
-
-                    b.HasIndex("Type")
-                        .HasDatabaseName("ix_notifications_type");
-
-                    b.ToTable("notifications", (string)null);
-                });
-
-            modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.NotificationRecipient", b =>
-                {
-                    b.Property<Guid>("NotificationId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("notification_id");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_archived");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_read");
-
-                    b.Property<Instant?>("ReadAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("read_at");
-
-                    b.HasKey("NotificationId", "UserId");
-
-                    b.HasIndex("NotificationId")
-                        .HasDatabaseName("ix_notification_recipients_notification_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_notification_recipients_user_id");
-
-                    b.HasIndex("UserId", "IsRead")
-                        .HasDatabaseName("ix_notification_recipients_user_read");
-
-                    b.ToTable("notification_recipients", (string)null);
                 });
 
             modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.OperationLog", b =>
@@ -1178,6 +1072,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Property<int>("ResponseTimeMs")
                         .HasColumnType("integer")
                         .HasColumnName("response_time_ms");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
 
                     b.Property<string>("StackTrace")
                         .HasMaxLength(255)
@@ -1355,6 +1255,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Category")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("category");
@@ -1369,13 +1270,35 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("created_by");
+
+                    b.Property<Instant?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("deleted_by");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
-                    b.Property<bool>("IsSystemPermission")
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsSystemPermission")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
                         .HasColumnName("is_system_permission");
 
                     b.Property<string>("Name")
@@ -1384,17 +1307,32 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("tenant_id");
+
+                    b.Property<Instant?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("tenant_id");
+                        .HasColumnName("updated_by");
 
                     b.HasKey("Id")
                         .HasName("pk_permissions");
 
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_permissions_code");
+                    b.HasIndex("Category")
+                        .HasDatabaseName("ix_permissions_category");
 
                     b.ToTable("permissions", (string)null);
                 });
@@ -1415,6 +1353,11 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("created_by_ip");
+
+                    b.Property<string>("DeviceInfo")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("device_info");
 
                     b.Property<Instant>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
@@ -1439,6 +1382,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("revoked_by_ip");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<string>("TenantId")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1459,6 +1408,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasName("pk_refresh_tokens");
 
                     b.HasIndex("Token")
+                        .IsUnique()
                         .HasDatabaseName("ix_refresh_tokens_token");
 
                     b.HasIndex("UserId")
@@ -1511,7 +1461,9 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("is_deleted");
 
                     b.Property<bool>("IsSystemRole")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
+                        .HasDefaultValue(false)
                         .HasColumnName("is_system_role");
 
                     b.Property<string>("Name")
@@ -1532,8 +1484,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("TenantId")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("tenant_id");
 
                     b.Property<Instant?>("UpdatedAt")
@@ -1547,14 +1499,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_roles");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_roles_tenant_id");
-
-                    b.HasIndex("TenantId", "Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_roles_tenant_name")
-                        .HasFilter("is_deleted = false");
 
                     b.ToTable("roles", (string)null);
                 });
@@ -1581,6 +1525,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
 
                     b.Property<Instant?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -1625,6 +1575,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
 
                     b.Property<Instant?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -1708,6 +1664,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("jsonb")
                         .HasColumnName("parameters");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<string>("TenantId")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
@@ -1761,6 +1723,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("key");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
 
                     b.Property<Instant>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -1852,6 +1820,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
+
                     b.Property<long>("StorageUsedInBytes")
                         .HasColumnType("bigint")
                         .HasColumnName("storage_used_in_bytes");
@@ -1906,6 +1880,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("key");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
@@ -1978,6 +1958,10 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsSystemUser")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_system_user");
 
                     b.Property<Instant?>("LastLoginAt")
                         .HasColumnType("timestamp with time zone")
@@ -2075,62 +2059,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.UserNotificationSettings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("CategorySettings")
-                        .HasMaxLength(255)
-                        .HasColumnType("jsonb")
-                        .HasColumnName("category_settings");
-
-                    b.Property<Instant>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<LocalTime?>("DoNotDisturbEnd")
-                        .HasColumnType("time")
-                        .HasColumnName("do_not_disturb_end");
-
-                    b.Property<LocalTime?>("DoNotDisturbStart")
-                        .HasColumnType("time")
-                        .HasColumnName("do_not_disturb_start");
-
-                    b.Property<bool>("EnableEmailNotifications")
-                        .HasColumnType("boolean")
-                        .HasColumnName("enable_email_notifications");
-
-                    b.Property<bool>("EnableRealtimeNotifications")
-                        .HasColumnType("boolean")
-                        .HasColumnName("enable_realtime_notifications");
-
-                    b.Property<string>("TenantId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<Instant?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_user_notification_settings");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_user_notification_settings_user_id");
-
-                    b.ToTable("user_notification_settings", (string)null);
-                });
-
             modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -2153,6 +2081,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("row_version");
 
                     b.Property<Instant?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -2192,18 +2126,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Announcement");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.DataScope", b =>
-                {
-                    b.HasOne("UnifiedApiPlatform.Domain.Entities.Role", "Role")
-                        .WithMany("DataScopes")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_data_scopes_roles_role_id");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.DictionaryItem", b =>
@@ -2260,27 +2182,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_menus_menus_parent_id");
 
                     b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.NotificationRecipient", b =>
-                {
-                    b.HasOne("UnifiedApiPlatform.Domain.Entities.Notification", "Notification")
-                        .WithMany("Recipients")
-                        .HasForeignKey("NotificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_notification_recipients_notifications_notification_id");
-
-                    b.HasOne("UnifiedApiPlatform.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_notification_recipients_users_user_id");
-
-                    b.Navigation("Notification");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.Organization", b =>
@@ -2340,7 +2241,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .WithMany("RolePermissions")
                         .HasForeignKey("PermissionCode")
                         .HasPrincipalKey("Code")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_role_permissions_permissions_permission_id");
 
@@ -2382,18 +2283,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Organization");
 
                     b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.UserNotificationSettings", b =>
-                {
-                    b.HasOne("UnifiedApiPlatform.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_notification_settings_users_user_id");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.UserRole", b =>
@@ -2442,11 +2331,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("RoleMenus");
                 });
 
-            modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.Notification", b =>
-                {
-                    b.Navigation("Recipients");
-                });
-
             modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.Organization", b =>
                 {
                     b.Navigation("Children");
@@ -2461,8 +2345,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.Role", b =>
                 {
-                    b.Navigation("DataScopes");
-
                     b.Navigation("RoleMenus");
 
                     b.Navigation("RolePermissions");

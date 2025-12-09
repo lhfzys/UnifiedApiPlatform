@@ -1,5 +1,8 @@
 namespace UnifiedApiPlatform.Application.Common.Models;
 
+/// <summary>
+/// Token 结果
+/// </summary>
 public class TokenResult
 {
     public string AccessToken { get; set; } = null!;

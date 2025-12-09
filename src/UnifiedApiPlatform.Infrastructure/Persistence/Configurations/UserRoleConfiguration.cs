@@ -24,6 +24,9 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
         builder.Property(ur => ur.UpdatedBy)
             .HasMaxLength(50);
 
+
+        builder.Property(ur => ur.RowVersion).IsRowVersion();
+
         // 关系配置
         builder.HasOne(ur => ur.User)
             .WithMany(u => u.UserRoles)

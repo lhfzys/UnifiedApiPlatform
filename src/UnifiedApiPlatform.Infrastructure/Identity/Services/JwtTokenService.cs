@@ -2,63 +2,72 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NodaTime;
 using UnifiedApiPlatform.Application.Common.Interfaces;
 using UnifiedApiPlatform.Application.Common.Models;
+using UnifiedApiPlatform.Domain.Entities;
 using UnifiedApiPlatform.Infrastructure.Options;
+using UnifiedApiPlatform.Infrastructure.Persistence;
 using UnifiedApiPlatform.Shared.Constants;
 
 namespace UnifiedApiPlatform.Infrastructure.Identity.Services;
 
 public class JwtTokenService : ITokenService
 {
-    private readonly JwtSettings _jwtSettings;
-    private readonly TokenValidationParameters _tokenValidationParameters;
+   private readonly JwtSettings _jwtSettings;
+    private readonly ApplicationDbContext _context;
+    private readonly IClock _clock;
 
-    public JwtTokenService(IOptions<JwtSettings> jwtSettings)
+    public JwtTokenService(
+        IOptions<JwtSettings> jwtSettings,
+        ApplicationDbContext context,
+        IClock clock)
     {
         _jwtSettings = jwtSettings.Value;
-
-        _tokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey)),
-            ValidateIssuer = true,
-            ValidIssuer = _jwtSettings.Issuer,
-            ValidateAudience = true,
-            ValidAudience = _jwtSettings.Audience,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
-        };
+        _context = context;
+        _clock = clock;
     }
 
+    /// <summary>
+    /// 生成访问令牌
+    /// </summary>
     public string GenerateAccessToken(TokenClaims claims)
     {
         var tokenClaims = new List<Claim>
         {
+            // 标准 Claims
             new(JwtRegisteredClaimNames.Sub, claims.UserId),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Email, claims.Email),
+
+            // 自定义 Claims
             new(CustomClaimTypes.UserId, claims.UserId),
-            new(CustomClaimTypes.TenantId, claims.TenantId),
             new(CustomClaimTypes.UserName, claims.UserName),
-            new(CustomClaimTypes.Email, claims.Email)
+            new(CustomClaimTypes.Email, claims.Email),
+            new(CustomClaimTypes.TenantId, claims.TenantId)
         };
 
-        // 添加组织ID
+        // 添加组织 ID
         if (!string.IsNullOrWhiteSpace(claims.OrganizationId))
         {
             tokenClaims.Add(new Claim(CustomClaimTypes.OrganizationId, claims.OrganizationId));
         }
 
         // 添加角色
-        tokenClaims.AddRange(claims.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
-        tokenClaims.AddRange(claims.Roles.Select(role => new Claim(CustomClaimTypes.Role, role)));
+        foreach (var role in claims.Roles)
+        {
+            tokenClaims.Add(new Claim(ClaimTypes.Role, role));
+            tokenClaims.Add(new Claim(CustomClaimTypes.Role, role));
+        }
 
         // 添加权限
-        tokenClaims.AddRange(claims.Permissions.Select(permission =>
-            new Claim(CustomClaimTypes.Permission, permission)));
+        foreach (var permission in claims.Permissions)
+        {
+            tokenClaims.Add(new Claim(CustomClaimTypes.Permission, permission));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -75,74 +84,87 @@ public class JwtTokenService : ITokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateRefreshToken()
+    /// <summary>
+    /// 生成刷新令牌
+    /// </summary>
+    public async Task<RefreshToken> GenerateRefreshTokenAsync(
+        Guid userId,
+        string tenantId,
+        string createdByIp,
+        string? deviceInfo = null)
     {
-        var randomNumber = new byte[64];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber);
-    }
+        var now = _clock.GetCurrentInstant();
+        var expiresAt = now.Plus(Duration.FromDays(_jwtSettings.RefreshTokenExpirationDays));
 
-    public TokenClaims? GetClaimsFromToken(string token)
-    {
-        try
+        var refreshToken = new RefreshToken
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(token, _tokenValidationParameters, out _);
-
-            return ExtractClaims(principal);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    public bool ValidateToken(string token, out TokenClaims? claims)
-    {
-        claims = null;
-
-        try
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = _tokenValidationParameters.Clone();
-            validationParameters.ValidateLifetime = false; // 不验证过期时间
-
-            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
-            claims = ExtractClaims(principal);
-
-            return claims != null;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    private static TokenClaims? ExtractClaims(ClaimsPrincipal principal)
-    {
-        var userId = principal.FindFirst(CustomClaimTypes.UserId)?.Value;
-        var tenantId = principal.FindFirst(CustomClaimTypes.TenantId)?.Value;
-        var email = principal.FindFirst(CustomClaimTypes.Email)?.Value;
-        var userName = principal.FindFirst(CustomClaimTypes.UserName)?.Value;
-
-        if (string.IsNullOrWhiteSpace(userId) ||
-            string.IsNullOrWhiteSpace(tenantId) ||
-            string.IsNullOrWhiteSpace(email) ||
-            string.IsNullOrWhiteSpace(userName))
-        {
-            return null;
-        }
-
-        return new TokenClaims
-        {
+            Id = Guid.NewGuid(),
             UserId = userId,
             TenantId = tenantId,
-            Email = email,
-            UserName = userName,
-            OrganizationId = principal.FindFirst(CustomClaimTypes.OrganizationId)?.Value,
-            Roles = principal.FindAll(CustomClaimTypes.Role).Select(c => c.Value).ToList(),
-            Permissions = principal.FindAll(CustomClaimTypes.Permission).Select(c => c.Value).ToList()
+            Token = GenerateRandomToken(),
+            ExpiresAt = expiresAt,
+            CreatedAt = now,
+            CreatedByIp = createdByIp,
+            DeviceInfo = deviceInfo
         };
+
+        _context.RefreshTokens.Add(refreshToken);
+        await _context.SaveChangesAsync();
+
+        return refreshToken;
+    }
+
+    /// <summary>
+    /// 验证刷新令牌
+    /// </summary>
+    public async Task<RefreshToken?> ValidateRefreshTokenAsync(string token)
+    {
+        var refreshToken = await _context.RefreshTokens
+            .Include(rt => rt.User)
+            .FirstOrDefaultAsync(rt => rt.Token == token);
+
+        if (refreshToken == null)
+        {
+            return null;
+        }
+
+        // 使用业务方法检查令牌是否可用
+        if (!refreshToken.IsActive(_clock))
+        {
+            return null;
+        }
+
+        return refreshToken;
+    }
+
+    /// <summary>
+    /// 撤销刷新令牌
+    /// </summary>
+    public async Task RevokeRefreshTokenAsync(string token, string revokedByIp, string? reason = null)
+    {
+        var refreshToken = await _context.RefreshTokens
+            .FirstOrDefaultAsync(rt => rt.Token == token);
+
+        if (refreshToken != null && !refreshToken.IsRevoked())
+        {
+            refreshToken.Revoke(_clock, revokedByIp, reason);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// 生成随机 Token（SHA256 哈希）
+    /// </summary>
+    private static string GenerateRandomToken()
+    {
+        var randomBytes = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
+
+        // 计算 SHA256 哈希
+        using var sha256 = SHA256.Create();
+        var hashBytes = sha256.ComputeHash(randomBytes);
+
+        return Convert.ToBase64String(hashBytes);
     }
 }

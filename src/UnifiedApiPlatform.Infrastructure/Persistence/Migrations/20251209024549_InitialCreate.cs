@@ -30,7 +30,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     target_audience = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     target_role_ids = table.Column<string>(type: "jsonb", maxLength: 255, nullable: true),
                     target_org_ids = table.Column<string>(type: "jsonb", maxLength: 255, nullable: true),
-                    view_count = table.Column<int>(type: "integer", nullable: false)
+                    view_count = table.Column<int>(type: "integer", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -61,7 +62,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     timestamp = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
                     duration_ms = table.Column<int>(type: "integer", nullable: false),
                     success = table.Column<bool>(type: "boolean", nullable: false),
-                    error_message = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true)
+                    error_message = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -80,7 +82,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     is_system = table.Column<bool>(type: "boolean", nullable: false),
                     is_editable = table.Column<bool>(type: "boolean", nullable: false),
                     sort = table.Column<int>(type: "integer", nullable: false),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -103,13 +106,13 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     expires_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
                     is_public = table.Column<bool>(type: "boolean", nullable: false),
                     metadata = table.Column<string>(type: "jsonb", maxLength: 255, nullable: true),
-                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     deleted_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
@@ -134,13 +137,13 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     error_message = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     started_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
                     completed_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
-                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     deleted_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
@@ -156,18 +159,22 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     parent_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    code = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     type = table.Column<int>(type: "integer", nullable: false),
                     permission_code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     icon = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     path = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     component = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    sort = table.Column<int>(type: "integer", nullable: false),
+                    sort_order = table.Column<int>(type: "integer", nullable: false),
                     is_visible = table.Column<bool>(type: "boolean", nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false),
                     is_system_menu = table.Column<bool>(type: "boolean", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true)
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -178,29 +185,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         principalTable: "menus",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "notifications",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    content = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
-                    type = table.Column<int>(type: "integer", nullable: false),
-                    category = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    sender_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    sender_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    action_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    action_text = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    related_entity_type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    related_entity_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_notifications", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -224,7 +208,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     trace_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     timestamp = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
                     error_message = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    stack_trace = table.Column<string>(type: "text", maxLength: 255, nullable: true)
+                    stack_trace = table.Column<string>(type: "text", maxLength: 255, nullable: true),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -236,13 +221,20 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    category = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    category = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    is_system_permission = table.Column<bool>(type: "boolean", nullable: false),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    is_system_permission = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    created_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    deleted_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    tenant_id = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -258,16 +250,16 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     display_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    is_system_role = table.Column<bool>(type: "boolean", nullable: false),
+                    is_system_role = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     sort = table.Column<int>(type: "integer", nullable: false),
-                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     deleted_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
-                    tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    tenant_id = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
@@ -291,7 +283,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     last_status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     created_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -309,7 +302,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     category = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     is_read_only = table.Column<bool>(type: "boolean", nullable: false),
-                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -326,7 +320,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     value = table.Column<string>(type: "text", maxLength: 255, nullable: true),
                     data_type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     inherit_from_system = table.Column<bool>(type: "boolean", nullable: false),
-                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -352,10 +347,11 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     contact_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     contact_email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     contact_phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true)
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -379,7 +375,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     is_enabled = table.Column<bool>(type: "boolean", nullable: false),
                     parent_id = table.Column<Guid>(type: "uuid", nullable: true),
                     extra_data = table.Column<string>(type: "jsonb", maxLength: 255, nullable: true),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -406,7 +403,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     sort = table.Column<int>(type: "integer", nullable: false),
                     is_main = table.Column<bool>(type: "boolean", nullable: false),
                     uploaded_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    uploaded_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    uploaded_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -430,7 +428,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     status = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     error_message = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     created_entity_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -444,35 +443,17 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "data_scopes",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    resource_type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    scope_type = table.Column<int>(type: "integer", nullable: false),
-                    scope_value = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    filter_expression = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_data_scopes", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_data_scopes_roles_role_id",
-                        column: x => x.role_id,
-                        principalTable: "roles",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "role_menus",
                 columns: table => new
                 {
                     role_id = table.Column<Guid>(type: "uuid", nullable: false),
                     menu_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
+                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    created_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -497,7 +478,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 {
                     role_id = table.Column<Guid>(type: "uuid", nullable: false),
                     permission_code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
+                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    created_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -507,7 +493,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         column: x => x.permission_code,
                         principalTable: "permissions",
                         principalColumn: "code",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "fk_role_permissions_roles_role_id",
                         column: x => x.role_id,
@@ -551,32 +537,12 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     device_type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     location = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     login_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    logout_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true)
+                    logout_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_login_logs", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "notification_recipients",
-                columns: table => new
-                {
-                    notification_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    is_read = table.Column<bool>(type: "boolean", nullable: false),
-                    read_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
-                    is_archived = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_notification_recipients", x => new { x.notification_id, x.user_id });
-                    table.ForeignKey(
-                        name: "fk_notification_recipients_notifications_notification_id",
-                        column: x => x.notification_id,
-                        principalTable: "notifications",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -592,13 +558,13 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     level = table.Column<int>(type: "integer", nullable: false),
                     path = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     sort = table.Column<int>(type: "integer", nullable: false),
-                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     deleted_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
@@ -629,16 +595,17 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     last_login_ip = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     password_changed_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
                     locked_until = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
-                    failed_login_attempts = table.Column<int>(type: "integer", nullable: false),
+                    login_failure_count = table.Column<int>(type: "integer", nullable: false),
+                    is_system_user = table.Column<bool>(type: "boolean", nullable: false),
                     organization_id = table.Column<Guid>(type: "uuid", nullable: true),
                     manager_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     deleted_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
@@ -679,7 +646,9 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     revoked_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
                     revoked_by_ip = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     replaced_by_token = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    revoke_reason = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true)
+                    revoke_reason = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    device_info = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -693,38 +662,17 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "user_notification_settings",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    enable_realtime_notifications = table.Column<bool>(type: "boolean", nullable: false),
-                    enable_email_notifications = table.Column<bool>(type: "boolean", nullable: false),
-                    category_settings = table.Column<string>(type: "jsonb", maxLength: 255, nullable: true),
-                    do_not_disturb_start = table.Column<LocalTime>(type: "time", nullable: true),
-                    do_not_disturb_end = table.Column<LocalTime>(type: "time", nullable: true),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_user_notification_settings", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_user_notification_settings_users_user_id",
-                        column: x => x.user_id,
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "user_roles",
                 columns: table => new
                 {
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     role_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
+                    created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    created_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -797,16 +745,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 name: "ix_audit_logs_user_id",
                 table: "audit_logs",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_data_scopes_role_id",
-                table: "data_scopes",
-                column: "role_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_data_scopes_role_resource",
-                table: "data_scopes",
-                columns: new[] { "role_id", "resource_type" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_dictionary_categories_tenant_code",
@@ -961,41 +899,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 columns: new[] { "tenant_id", "name" });
 
             migrationBuilder.CreateIndex(
-                name: "ix_notification_recipients_notification_id",
-                table: "notification_recipients",
-                column: "notification_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_notification_recipients_user_id",
-                table: "notification_recipients",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_notification_recipients_user_read",
-                table: "notification_recipients",
-                columns: new[] { "user_id", "is_read" });
-
-            migrationBuilder.CreateIndex(
-                name: "ix_notifications_created_at",
-                table: "notifications",
-                column: "created_at");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_notifications_sender_id",
-                table: "notifications",
-                column: "sender_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_notifications_tenant_id",
-                table: "notifications",
-                column: "tenant_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_notifications_type",
-                table: "notifications",
-                column: "type");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_operation_logs_status",
                 table: "operation_logs",
                 column: "response_status");
@@ -1048,15 +951,15 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_permissions_code",
+                name: "ix_permissions_category",
                 table: "permissions",
-                column: "code",
-                unique: true);
+                column: "category");
 
             migrationBuilder.CreateIndex(
                 name: "ix_refresh_tokens_token",
                 table: "refresh_tokens",
-                column: "token");
+                column: "token",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_refresh_tokens_user_expires",
@@ -1087,18 +990,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 name: "ix_role_permissions_role_id",
                 table: "role_permissions",
                 column: "role_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_roles_tenant_id",
-                table: "roles",
-                column: "tenant_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_roles_tenant_name",
-                table: "roles",
-                columns: new[] { "tenant_id", "name" },
-                unique: true,
-                filter: "is_deleted = false");
 
             migrationBuilder.CreateIndex(
                 name: "ix_scheduled_jobs_enabled",
@@ -1142,12 +1033,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 name: "ix_tenants_identifier",
                 table: "tenants",
                 column: "identifier",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_notification_settings_user_id",
-                table: "user_notification_settings",
-                column: "user_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -1206,14 +1091,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 onDelete: ReferentialAction.SetNull);
 
             migrationBuilder.AddForeignKey(
-                name: "fk_notification_recipients_users_user_id",
-                table: "notification_recipients",
-                column: "user_id",
-                principalTable: "users",
-                principalColumn: "id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
                 name: "FK_organizations_users_manager_id",
                 table: "organizations",
                 column: "manager_id",
@@ -1236,9 +1113,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 name: "audit_logs");
 
             migrationBuilder.DropTable(
-                name: "data_scopes");
-
-            migrationBuilder.DropTable(
                 name: "dictionary_items");
 
             migrationBuilder.DropTable(
@@ -1249,9 +1123,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "login_logs");
-
-            migrationBuilder.DropTable(
-                name: "notification_recipients");
 
             migrationBuilder.DropTable(
                 name: "operation_logs");
@@ -1275,9 +1146,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 name: "tenant_settings");
 
             migrationBuilder.DropTable(
-                name: "user_notification_settings");
-
-            migrationBuilder.DropTable(
                 name: "user_roles");
 
             migrationBuilder.DropTable(
@@ -1291,9 +1159,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "import_jobs");
-
-            migrationBuilder.DropTable(
-                name: "notifications");
 
             migrationBuilder.DropTable(
                 name: "menus");

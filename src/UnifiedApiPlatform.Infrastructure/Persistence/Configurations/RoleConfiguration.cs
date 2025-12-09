@@ -23,21 +23,10 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         builder.Property(r => r.Description)
             .HasMaxLength(500);
 
-        builder.Property(r => r.TenantId)
+        builder.Property(r => r.IsSystemRole)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasDefaultValue(false);
 
-        builder.ConfigureRowVersion();
-
-        // 唯一约束：租户内角色名唯一
-        builder.HasIndex(r => new { r.TenantId, r.Name })
-            .IsUnique()
-            .HasFilter("is_deleted = false")
-            .HasDatabaseName("ix_roles_tenant_name");
-
-        // 索引
-        builder.HasIndex(r => r.TenantId)
-            .HasDatabaseName("ix_roles_tenant_id");
 
         // 关系配置
         builder.HasMany(r => r.UserRoles)
@@ -54,12 +43,5 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             .WithOne(rm => rm.Role)
             .HasForeignKey(rm => rm.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(r => r.DataScopes)
-            .WithOne(ds => ds.Role)
-            .HasForeignKey(ds => ds.RoleId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Ignore(r => r.DomainEvents);
     }
 }

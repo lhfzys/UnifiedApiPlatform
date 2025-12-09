@@ -16,16 +16,12 @@ public interface IApplicationDbContext
     public DbSet<UserRole> UserRoles { get; }
     public DbSet<RolePermission> RolePermissions { get; }
     public DbSet<RoleMenu> RoleMenus { get; }
-    public DbSet<DataScope> DataScopes { get; }
     public DbSet<RefreshToken> RefreshTokens { get; }
     public DbSet<AuditLog> AuditLogs { get; }
     public DbSet<OperationLog> OperationLogs { get; }
     public DbSet<LoginLog> LoginLogs { get; }
     public DbSet<FileRecord> FileRecords { get; }
     public DbSet<EntityAttachment> EntityAttachments { get; }
-    public DbSet<Notification> Notifications { get; }
-    public DbSet<NotificationRecipient> NotificationRecipients { get; }
-    public DbSet<UserNotificationSettings> UserNotificationSettings { get; }
     public DbSet<DictionaryCategory> DictionaryCategories { get; }
     public DbSet<DictionaryItem> DictionaryItems { get; }
     public DbSet<SystemSettings> SystemSettings { get; }

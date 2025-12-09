@@ -23,6 +23,7 @@ public class User : MultiTenantEntity, IAggregateRoot
     public Instant? PasswordChangedAt { get; set; }
     public Instant? LockedUntil { get; set; }
     public int LoginFailureCount { get; set; }
+    public bool IsSystemUser { get; set; } = false;
 
     // 组织关联
     public Guid? OrganizationId { get; set; }

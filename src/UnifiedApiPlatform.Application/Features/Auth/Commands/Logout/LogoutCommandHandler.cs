@@ -1,43 +1,47 @@
 using FluentResults;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using UnifiedApiPlatform.Application.Common.Interfaces;
 
 namespace UnifiedApiPlatform.Application.Features.Auth.Commands.Logout;
 
 public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result>
 {
-    private readonly IRefreshTokenService _refreshTokenService;
+    private readonly ITokenService _tokenService;
     private readonly ICurrentUserService _currentUser;
+    private readonly ILogger<LogoutCommandHandler> _logger;
 
     public LogoutCommandHandler(
-        IRefreshTokenService refreshTokenService,
-        ICurrentUserService currentUser)
+        ITokenService tokenService,
+        ICurrentUserService currentUser,
+        ILogger<LogoutCommandHandler> logger)
     {
-        _refreshTokenService = refreshTokenService;
+        _tokenService = tokenService;
         _currentUser = currentUser;
+        _logger = logger;
     }
 
     public async Task<Result> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        // 如果提供了 RefreshToken，撤销该令牌
-        if (!string.IsNullOrWhiteSpace(request.RefreshToken))
+        try
         {
-            await _refreshTokenService.RevokeRefreshTokenAsync(
-                request.RefreshToken,
-                request.IpAddress ?? "Unknown",
-                "User logout",
-                cancellationToken);
-        }
-        // 否则撤销该用户的所有令牌
-        else if (_currentUser.IsAuthenticated && Guid.TryParse(_currentUser.UserId, out var userId))
-        {
-            await _refreshTokenService.RevokeAllUserTokensAsync(
-                userId,
-                request.IpAddress ?? "Unknown",
-                "User logout all",
-                cancellationToken);
-        }
+            if (!string.IsNullOrEmpty(request.RefreshToken))
+            {
+                await _tokenService.RevokeRefreshTokenAsync(
+                    request.RefreshToken,
+                    request.IpAddress ?? "Unknown",
+                    "User logged out"
+                );
+            }
 
-        return Result.Ok();
+            _logger.LogInformation("用户登出成功: {UserId}", _currentUser.UserId);
+
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "登出失败");
+            return Result.Fail("登出失败");
+        }
     }
 }

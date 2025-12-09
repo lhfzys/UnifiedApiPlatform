@@ -19,7 +19,6 @@ public class Role : MultiTenantEntity, IAggregateRoot
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
     public ICollection<RoleMenu> RoleMenus { get; set; } = new List<RoleMenu>();
-    public ICollection<DataScope> DataScopes { get; set; } = new List<DataScope>();
 
     // 领域事件
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
@@ -27,6 +26,11 @@ public class Role : MultiTenantEntity, IAggregateRoot
     public void AddDomainEvent(DomainEvent domainEvent)
     {
         _domainEvents.Add(domainEvent);
+    }
+
+    public void RemoveDomainEvent(DomainEvent eventItem)
+    {
+        _domainEvents.Remove(eventItem);
     }
 
     public void ClearDomainEvents()

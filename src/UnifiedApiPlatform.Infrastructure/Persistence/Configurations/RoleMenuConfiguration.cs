@@ -24,10 +24,22 @@ public class RoleMenuConfiguration : IEntityTypeConfiguration<RoleMenu>
         builder.Property(ur => ur.UpdatedBy)
             .HasMaxLength(50);
 
+        builder.Property(rm => rm.RowVersion).IsRowVersion();
+
         builder.HasIndex(rm => rm.RoleId)
             .HasDatabaseName("ix_role_menus_role_id");
 
         builder.HasIndex(rm => rm.MenuId)
             .HasDatabaseName("ix_role_menus_menu_id");
+
+        builder.HasOne(rm => rm.Role)
+            .WithMany(r => r.RoleMenus)
+            .HasForeignKey(rm => rm.RoleId)
+            .OnDelete(DeleteBehavior.Cascade);  // Role 删除时级联删除
+
+        builder.HasOne(rm => rm.Menu)
+            .WithMany(m => m.RoleMenus)
+            .HasForeignKey(rm => rm.MenuId)
+            .OnDelete(DeleteBehavior.Cascade);  // Menu 删除时级联删除
     }
 }

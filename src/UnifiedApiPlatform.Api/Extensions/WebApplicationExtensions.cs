@@ -1,9 +1,12 @@
 using FastEndpoints;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using UnifiedApiPlatform.Api.PreProcessors;
 using UnifiedApiPlatform.Infrastructure.Middleware;
+using UnifiedApiPlatform.Infrastructure.Persistence;
+using UnifiedApiPlatform.Infrastructure.Persistence.Seeds;
 using UnifiedApiPlatform.Shared.Constants;
 
 namespace UnifiedApiPlatform.Api.Extensions;

@@ -1,7 +1,11 @@
 using UnifiedApiPlatform.Application.Common.Models;
+using UnifiedApiPlatform.Domain.Entities;
 
 namespace UnifiedApiPlatform.Application.Common.Interfaces;
 
+/// <summary>
+/// Token 服务接口
+/// </summary>
 public interface ITokenService
 {
     /// <summary>
@@ -12,15 +16,19 @@ public interface ITokenService
     /// <summary>
     /// 生成刷新令牌
     /// </summary>
-    string GenerateRefreshToken();
+    Task<RefreshToken> GenerateRefreshTokenAsync(
+        Guid userId,
+        string tenantId,
+        string createdByIp,
+        string? deviceInfo = null);
 
     /// <summary>
-    /// 从访问令牌中解析声明
+    /// 验证刷新令牌
     /// </summary>
-    TokenClaims? GetClaimsFromToken(string token);
+    Task<RefreshToken?> ValidateRefreshTokenAsync(string token);
 
     /// <summary>
-    /// 验证访问令牌（不检查过期时间）
+    /// 撤销刷新令牌
     /// </summary>
-    bool ValidateToken(string token, out TokenClaims? claims);
+    Task RevokeRefreshTokenAsync(string token, string revokedByIp, string? reason = null);
 }

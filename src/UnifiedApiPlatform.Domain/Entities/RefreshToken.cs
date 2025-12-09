@@ -20,9 +20,29 @@ public class RefreshToken : BaseEntity
     public string? RevokedByIp { get; set; }
     public string? ReplacedByToken { get; set; }
     public string? RevokeReason { get; set; }
+    public string? DeviceInfo { get; set; }
 
     // 业务方法（不映射到数据库）
     public bool IsExpired(IClock clock) => clock.GetCurrentInstant() >= ExpiresAt;
-    public bool IsRevoked() => RevokedAt != null;
+    public bool IsRevoked() => RevokedAt.HasValue;
     public bool IsActive(IClock clock) => !IsRevoked() && !IsExpired(clock);
+
+    /// <summary>
+    /// 撤销令牌
+    /// </summary>
+    public void Revoke(IClock clock, string revokedByIp, string? reason = null)
+    {
+        RevokedAt = clock.GetCurrentInstant();
+        RevokedByIp = revokedByIp;
+        RevokeReason = reason;
+    }
+
+    /// <summary>
+    /// 替换令牌（用于令牌轮换）
+    /// </summary>
+    public void ReplaceWith(IClock clock, string newToken, string revokedByIp)
+    {
+        ReplacedByToken = newToken;
+        Revoke(clock, revokedByIp, "Replaced by new token");
+    }
 }
