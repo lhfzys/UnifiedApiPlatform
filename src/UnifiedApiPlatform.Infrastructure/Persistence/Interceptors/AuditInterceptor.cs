@@ -65,28 +65,28 @@ public class AuditInterceptor : SaveChangesInterceptor
             var auditLog = new AuditLog
             {
                 TenantId = entityTenantId,
-                UserId = userId != null ? Guid.Parse(userId).ToString() : null,
+               // UserId = userId != null ? Guid.Parse(userId).ToString() : null,
                 UserName = userName,
                 EntityType = entry.Entity.GetType().Name,
                 EntityId = GetPrimaryKey(entry)?.ToString(),
-                Action = MapEntityStateToAction(entry.State),
-                Timestamp = now
+               // Action = MapEntityStateToAction(entry.State),
+                //Timestamp = now
             };
 
             switch (entry.State)
             {
                 case EntityState.Added:
-                    auditLog.NewValues = GetNewValues(entry);
+                   // auditLog.NewValues = GetNewValues(entry);
                     break;
 
                 case EntityState.Modified:
-                    auditLog.OldValues = GetOldValues(entry);
-                    auditLog.NewValues = GetNewValues(entry);
-                    auditLog.ChangedProperties = GetChangedProperties(entry);
+                    // auditLog.OldValues = GetOldValues(entry);
+                    // auditLog.NewValues = GetNewValues(entry);
+                    // auditLog.ChangedProperties = GetChangedProperties(entry);
                     break;
 
                 case EntityState.Deleted:
-                    auditLog.OldValues = GetOldValues(entry);
+                   // auditLog.OldValues = GetOldValues(entry);
                     break;
             }
 
@@ -139,16 +139,16 @@ public class AuditInterceptor : SaveChangesInterceptor
         return defaultTenantId;
     }
 
-    private static AuditAction MapEntityStateToAction(EntityState state)
-    {
-        return state switch
-        {
-            EntityState.Added => AuditAction.Create,
-            EntityState.Modified => AuditAction.Update,
-            EntityState.Deleted => AuditAction.Delete,
-            _ => AuditAction.Update
-        };
-    }
+    // private static AuditAction MapEntityStateToAction(EntityState state)
+    // {
+    //     return state switch
+    //     {
+    //         EntityState.Added => AuditAction.Create,
+    //         EntityState.Modified => AuditAction.Update,
+    //         EntityState.Deleted => AuditAction.Delete,
+    //         _ => AuditAction.Update
+    //     };
+    // }
 
     private static object? GetPrimaryKey(EntityEntry entry)
     {

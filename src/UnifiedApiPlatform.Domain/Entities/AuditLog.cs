@@ -1,42 +1,98 @@
 using NodaTime;
 using UnifiedApiPlatform.Domain.Common;
-using UnifiedApiPlatform.Domain.Enums;
 
 namespace UnifiedApiPlatform.Domain.Entities;
 
 /// <summary>
-/// 审计日志
+/// 操作日志
 /// </summary>
 public class AuditLog : BaseEntity
 {
-    public string TenantId { get; set; } = null!;
-    public string? UserId { get; set; }
+    /// <summary>
+    /// 租户 ID
+    /// </summary>
+    public string? TenantId { get; set; }
+
+    /// <summary>
+    /// 用户 ID
+    /// </summary>
+    public Guid? UserId { get; set; }
+
+    /// <summary>
+    /// 用户名
+    /// </summary>
     public string? UserName { get; set; }
-    public string? IpAddress { get; set; }
-    public string? UserAgent { get; set; }
 
-    // 操作信息
-    public AuditAction Action { get; set; }
-    public string EntityType { get; set; } = null!;
+    /// <summary>
+    /// 操作类型（Create/Update/Delete/Query/Login/Logout）
+    /// </summary>
+    public string Action { get; set; } = null!;
+
+    /// <summary>
+    /// 实体类型（User/Role/Organization/Menu 等）
+    /// </summary>
+    public string? EntityType { get; set; }
+
+    /// <summary>
+    /// 实体 ID
+    /// </summary>
     public string? EntityId { get; set; }
-    public string? EntityName { get; set; }
 
-    // 变更详情
-    public string? OldValues { get; set; } // JSON
-    public string? NewValues { get; set; } // JSON
-    public string? ChangedProperties { get; set; } // 逗号分隔
+    /// <summary>
+    /// HTTP 方法（GET/POST/PUT/DELETE）
+    /// </summary>
+    public string HttpMethod { get; set; } = null!;
 
-    // 请求信息
-    public string? RequestPath { get; set; }
-    public string? RequestMethod { get; set; }
+    /// <summary>
+    /// 请求路径
+    /// </summary>
+    public string RequestPath { get; set; } = null!;
+
+    /// <summary>
+    /// 请求参数（JSON）
+    /// </summary>
     public string? RequestBody { get; set; }
 
-    // 追踪信息
-    public string? TraceId { get; set; }
-    public Instant Timestamp { get; set; }
-    public int DurationMs { get; set; }
+    /// <summary>
+    /// 响应状态码
+    /// </summary>
+    public int StatusCode { get; set; }
 
-    // 结果
-    public bool Success { get; set; }
-    public string? ErrorMessage { get; set; }
+    /// <summary>
+    /// 响应结果（JSON，失败时记录）
+    /// </summary>
+    public string? ResponseBody { get; set; }
+
+    /// <summary>
+    /// 执行时长（毫秒）
+    /// </summary>
+    public long Duration { get; set; }
+
+    /// <summary>
+    /// IP 地址
+    /// </summary>
+    public string IpAddress { get; set; } = null!;
+
+    /// <summary>
+    /// User-Agent
+    /// </summary>
+    public string? UserAgent { get; set; }
+
+    /// <summary>
+    /// 异常信息（如果有）
+    /// </summary>
+    public string? Exception { get; set; }
+
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    public Instant CreatedAt { get; set; }
+
+    /// <summary>
+    /// 是否成功
+    /// </summary>
+    public bool IsSuccess { get; set; }
+
+    // 导航属性
+    public User? User { get; set; }
 }

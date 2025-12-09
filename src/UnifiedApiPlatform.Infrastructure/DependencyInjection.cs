@@ -9,6 +9,7 @@ using UnifiedApiPlatform.Infrastructure.Options;
 using UnifiedApiPlatform.Infrastructure.Persistence;
 using UnifiedApiPlatform.Infrastructure.Persistence.Interceptors;
 using UnifiedApiPlatform.Infrastructure.Persistence.Seeds;
+using UnifiedApiPlatform.Infrastructure.Services;
 
 namespace UnifiedApiPlatform.Infrastructure;
 
@@ -42,7 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
         // 拦截器
-        services.AddScoped<AuditInterceptor>();
+        // services.AddScoped<AuditInterceptor>();
         services.AddScoped<SoftDeleteInterceptor>();
         services.AddScoped<DomainEventInterceptor>();
 
@@ -65,15 +66,18 @@ public static class DependencyInjection
                 .EnableDetailedErrors(databaseSettings.EnableSensitiveDataLogging);
 
             // 添加拦截器
-            var auditInterceptor = serviceProvider.GetRequiredService<AuditInterceptor>();
+           // var auditInterceptor = serviceProvider.GetRequiredService<AuditInterceptor>();
             var softDeleteInterceptor = serviceProvider.GetRequiredService<SoftDeleteInterceptor>();
             var domainEventInterceptor = serviceProvider.GetRequiredService<DomainEventInterceptor>();
 
-            options.AddInterceptors(auditInterceptor, softDeleteInterceptor, domainEventInterceptor);
+            options.AddInterceptors(softDeleteInterceptor, domainEventInterceptor);
         });
 
         // 种子数据服务
         services.AddScoped<DataSeeder>();
+
+        // 添加审计日志服务
+        services.AddScoped<IAuditLogService, AuditLogService>();
 
         return services;
     }

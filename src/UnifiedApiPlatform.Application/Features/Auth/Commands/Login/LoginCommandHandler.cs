@@ -151,8 +151,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
             IpAddress = request.IpAddress ?? "Unknown",
             UserAgent = request.UserAgent ?? "Unknown",
             LoginType = "Password",
-            Status = LoginStatus.Success,
-            LoginAt = _clock.GetCurrentInstant()
+            // Status = LoginStatus.Success,
+            // LoginAt = _clock.GetCurrentInstant()
         };
 
         _context.LoginLogs.Add(loginLog);
@@ -185,9 +185,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
             IpAddress = request.IpAddress ?? "Unknown",
             UserAgent = request.UserAgent ?? "Unknown",
             LoginType = "Password",
-            Status = status,
+            // Status = status,
             FailureReason = reason,
-            LoginAt = _clock.GetCurrentInstant()
+            // LoginAt = _clock.GetCurrentInstant()
         };
 
         _context.LoginLogs.Add(loginLog);

@@ -153,69 +153,66 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<int>("Action")
-                        .HasColumnType("integer")
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("action");
 
-                    b.Property<string>("ChangedProperties")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("changed_properties");
+                    b.Property<Instant>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
-                    b.Property<int>("DurationMs")
-                        .HasColumnType("integer")
-                        .HasColumnName("duration_ms");
+                    b.Property<long>("Duration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("duration");
 
                     b.Property<string>("EntityId")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("entity_id");
 
-                    b.Property<string>("EntityName")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("entity_name");
-
                     b.Property<string>("EntityType")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("entity_type");
 
-                    b.Property<string>("ErrorMessage")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("error_message");
+                    b.Property<string>("Exception")
+                        .HasMaxLength(255)
+                        .HasColumnType("text")
+                        .HasColumnName("exception");
+
+                    b.Property<string>("HttpMethod")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("http_method");
 
                     b.Property<string>("IpAddress")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("ip_address");
 
-                    b.Property<string>("NewValues")
-                        .HasMaxLength(255)
-                        .HasColumnType("jsonb")
-                        .HasColumnName("new_values");
-
-                    b.Property<string>("OldValues")
-                        .HasMaxLength(255)
-                        .HasColumnType("jsonb")
-                        .HasColumnName("old_values");
+                    b.Property<bool>("IsSuccess")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_success");
 
                     b.Property<string>("RequestBody")
                         .HasMaxLength(255)
                         .HasColumnType("text")
                         .HasColumnName("request_body");
 
-                    b.Property<string>("RequestMethod")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("request_method");
-
                     b.Property<string>("RequestPath")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("request_path");
+
+                    b.Property<string>("ResponseBody")
+                        .HasMaxLength(255)
+                        .HasColumnType("text")
+                        .HasColumnName("response_body");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -223,33 +220,22 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("bytea")
                         .HasColumnName("row_version");
 
-                    b.Property<bool>("Success")
-                        .HasColumnType("boolean")
-                        .HasColumnName("success");
+                    b.Property<int>("StatusCode")
+                        .HasColumnType("integer")
+                        .HasColumnName("status_code");
 
                     b.Property<string>("TenantId")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("tenant_id");
-
-                    b.Property<Instant>("Timestamp")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("timestamp");
-
-                    b.Property<string>("TraceId")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("trace_id");
 
                     b.Property<string>("UserAgent")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("user_agent");
 
-                    b.Property<string>("UserId")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
                     b.Property<string>("UserName")
@@ -263,17 +249,17 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.HasIndex("Action")
                         .HasDatabaseName("ix_audit_logs_action");
 
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_audit_logs_created_at");
+
                     b.HasIndex("TenantId")
                         .HasDatabaseName("ix_audit_logs_tenant_id");
-
-                    b.HasIndex("Timestamp")
-                        .HasDatabaseName("ix_audit_logs_timestamp");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_audit_logs_user_id");
 
-                    b.HasIndex("EntityType", "EntityId")
-                        .HasDatabaseName("ix_audit_logs_entity");
+                    b.HasIndex("TenantId", "CreatedAt")
+                        .HasDatabaseName("ix_audit_logs_tenant_created");
 
                     b.ToTable("audit_logs", (string)null);
                 });
@@ -823,6 +809,15 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("Browser")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("browser");
+
+                    b.Property<Instant>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("DeviceType")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
@@ -834,18 +829,19 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("failure_reason");
 
                     b.Property<string>("IpAddress")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("ip_address");
+
+                    b.Property<bool>("IsSuccess")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_success");
 
                     b.Property<string>("Location")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("location");
-
-                    b.Property<Instant>("LoginAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("login_at");
 
                     b.Property<string>("LoginType")
                         .IsRequired()
@@ -853,9 +849,10 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("login_type");
 
-                    b.Property<Instant?>("LogoutAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("logout_at");
+                    b.Property<string>("OperatingSystem")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("operating_system");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -863,12 +860,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("bytea")
                         .HasColumnName("row_version");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
-
                     b.Property<string>("TenantId")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("tenant_id");
@@ -891,11 +883,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_login_logs");
 
-                    b.HasIndex("LoginAt")
-                        .HasDatabaseName("ix_login_logs_login_at");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("ix_login_logs_status");
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_login_logs_created_at");
 
                     b.HasIndex("TenantId")
                         .HasDatabaseName("ix_login_logs_tenant_id");
@@ -904,10 +893,10 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_login_logs_user_id");
 
                     b.HasIndex("UserName")
-                        .HasDatabaseName("ix_login_logs_username");
+                        .HasDatabaseName("ix_login_logs_user_name");
 
-                    b.HasIndex("UserId", "Status")
-                        .HasDatabaseName("ix_login_logs_user_status");
+                    b.HasIndex("TenantId", "IsSuccess", "CreatedAt")
+                        .HasDatabaseName("ix_login_logs_tenant_success_created");
 
                     b.ToTable("login_logs", (string)null);
                 });
@@ -2156,6 +2145,17 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_announcement_reads_users_user_id");
 
                     b.Navigation("Announcement");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.AuditLog", b =>
+                {
+                    b.HasOne("UnifiedApiPlatform.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_audit_logs_users_user_id");
 
                     b.Navigation("User");
                 });

@@ -1,17 +1,18 @@
 namespace UnifiedApiPlatform.Domain.Enums;
 
-public enum AuditAction
+/// <summary>
+/// 审计操作类型
+/// </summary>
+public static class AuditAction
 {
-    Create = 0,
-    Update = 1,
-    Delete = 2,
-    View = 3,
-    Login = 4,
-    Logout = 5,
-    PasswordChange = 6,
-    PasswordReset = 7,
-    PermissionGrant = 8,
-    PermissionRevoke = 9,
-    Export = 10,
-    Import = 11
+    public const string Create = "Create";
+    public const string Update = "Update";
+    public const string Delete = "Delete";
+    public const string Query = "Query";
+    public const string Login = "Login";
+    public const string Logout = "Logout";
+    public const string RefreshToken = "RefreshToken";
+    public const string ChangePassword = "ChangePassword";
+    public const string Export = "Export";
+    public const string Import = "Import";
 }
