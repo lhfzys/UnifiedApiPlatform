@@ -36,6 +36,7 @@ public class DataSeeder
             await SeedTenantsAsync();
             await SeedPermissionsAsync();
             await SeedRolesAsync();
+            await SeedOrganizationsAsync();
             await SeedUsersAsync();
             await SeedRolePermissionsAsync();
             await SeedMenusAsync();
@@ -384,4 +385,175 @@ public class DataSeeder
 
         _logger.LogInformation("为 SuperAdmin 角色分配 {Count} 个权限", allPermissions.Count);
     }
+
+    /// <summary>
+/// 创建默认组织
+/// </summary>
+private async Task SeedOrganizationsAsync()
+{
+    if (await _context.Organizations.AnyAsync())
+    {
+        _logger.LogInformation("组织已存在，跳过种子数据");
+        return;
+    }
+
+    var now = _clock.GetCurrentInstant();
+
+    // 1. 创建公司总部
+    var company = new Organization
+    {
+        Id = Guid.NewGuid(),
+        TenantId = "default",
+        Code = "HQ",
+        Name = "公司总部",
+        FullName = "XX科技有限公司",
+        Type = OrganizationType.Company,
+        Description = "公司总部",
+        Level = 1,
+        Path = string.Empty, // 临时为空，后面会更新
+        SortOrder = 1,
+        IsActive = true,
+        CreatedAt = now
+    };
+    company.UpdatePath(string.Empty);
+
+    await _context.Organizations.AddAsync(company);
+
+    // 2. 创建一级部门
+    var techDept = new Organization
+    {
+        Id = Guid.NewGuid(),
+        TenantId = "default",
+        ParentId = company.Id,
+        Code = "TECH",
+        Name = "技术部",
+        FullName = "技术研发部",
+        Type = OrganizationType.Department,
+        Description = "负责产品研发",
+        Level = 2,
+        Path = string.Empty,
+        SortOrder = 1,
+        IsActive = true,
+        CreatedAt = now
+    };
+    techDept.UpdatePath(company.Path);
+
+    var marketDept = new Organization
+    {
+        Id = Guid.NewGuid(),
+        TenantId = "default",
+        ParentId = company.Id,
+        Code = "MARKET",
+        Name = "市场部",
+        FullName = "市场营销部",
+        Type = OrganizationType.Department,
+        Description = "负责市场推广和销售",
+        Level = 2,
+        Path = string.Empty,
+        SortOrder = 2,
+        IsActive = true,
+        CreatedAt = now
+    };
+    marketDept.UpdatePath(company.Path);
+
+    var adminDept = new Organization
+    {
+        Id = Guid.NewGuid(),
+        TenantId = "default",
+        ParentId = company.Id,
+        Code = "ADMIN",
+        Name = "行政部",
+        FullName = "行政人事部",
+        Type = OrganizationType.Department,
+        Description = "负责行政和人事管理",
+        Level = 2,
+        Path = string.Empty,
+        SortOrder = 3,
+        IsActive = true,
+        CreatedAt = now
+    };
+    adminDept.UpdatePath(company.Path);
+
+    await _context.Organizations.AddRangeAsync(techDept, marketDept, adminDept);
+
+    // 3. 创建二级团队（技术部下的团队）
+    var devTeam = new Organization
+    {
+        Id = Guid.NewGuid(),
+        TenantId = "default",
+        ParentId = techDept.Id,
+        Code = "DEV",
+        Name = "开发组",
+        FullName = "软件开发组",
+        Type = OrganizationType.Team,
+        Description = "负责软件开发",
+        Level = 3,
+        Path = string.Empty,
+        SortOrder = 1,
+        IsActive = true,
+        CreatedAt = now
+    };
+    devTeam.UpdatePath(techDept.Path);
+
+    var qaTeam = new Organization
+    {
+        Id = Guid.NewGuid(),
+        TenantId = "default",
+        ParentId = techDept.Id,
+        Code = "QA",
+        Name = "测试组",
+        FullName = "质量测试组",
+        Type = OrganizationType.Team,
+        Description = "负责质量测试",
+        Level = 3,
+        Path = string.Empty,
+        SortOrder = 2,
+        IsActive = true,
+        CreatedAt = now
+    };
+    qaTeam.UpdatePath(techDept.Path);
+
+    // 市场部下的团队
+    var salesTeam = new Organization
+    {
+        Id = Guid.NewGuid(),
+        TenantId = "default",
+        ParentId = marketDept.Id,
+        Code = "SALES",
+        Name = "销售组",
+        FullName = "销售团队",
+        Type = OrganizationType.Team,
+        Description = "负责产品销售",
+        Level = 3,
+        Path = string.Empty,
+        SortOrder = 1,
+        IsActive = true,
+        CreatedAt = now
+    };
+    salesTeam.UpdatePath(marketDept.Path);
+
+    var promotionTeam = new Organization
+    {
+        Id = Guid.NewGuid(),
+        TenantId = "default",
+        ParentId = marketDept.Id,
+        Code = "PROMOTION",
+        Name = "推广组",
+        FullName = "市场推广组",
+        Type = OrganizationType.Team,
+        Description = "负责市场推广",
+        Level = 3,
+        Path = string.Empty,
+        SortOrder = 2,
+        IsActive = true,
+        CreatedAt = now
+    };
+    promotionTeam.UpdatePath(marketDept.Path);
+
+    await _context.Organizations.AddRangeAsync(devTeam, qaTeam, salesTeam, promotionTeam);
+
+    await _context.SaveChangesAsync();
+
+    _logger.LogInformation("创建 8 个默认组织");
+}
 }

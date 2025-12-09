@@ -125,14 +125,12 @@ public static class ErrorCodes
     public const string FileUploadFailed = "FILE_UPLOAD_FAILED";
 
     // ==================== 组织相关 (7000-7999) ====================
-    /// <summary>组织不存在</summary>
+    // 7000-7999：组织相关
     public const string OrganizationNotFound = "ORGANIZATION_NOT_FOUND";
-
-    /// <summary>组织名称已存在</summary>
-    public const string OrganizationNameAlreadyExists = "ORGANIZATION_NAME_ALREADY_EXISTS";
-
-    /// <summary>不能删除有成员的组织</summary>
-    public const string OrganizationCannotDeleteWithMembers = "ORGANIZATION_CANNOT_DELETE_WITH_MEMBERS";
+    public const string OrganizationCodeAlreadyExists = "ORGANIZATION_CODE_ALREADY_EXISTS";
+    public const string OrganizationInUse = "ORGANIZATION_IN_USE";
+    public const string OrganizationCannotDeleteHasChildren = "ORGANIZATION_CANNOT_DELETE_HAS_CHILDREN";
+    public const string OrganizationCannotBeParentOfItself = "ORGANIZATION_CANNOT_BE_PARENT_OF_ITSELF";
 
     // ==================== 菜单相关 (8000-8999) ====================
     /// <summary>菜单不存在</summary>

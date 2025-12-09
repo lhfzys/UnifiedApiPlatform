@@ -60,8 +60,11 @@ public static class ErrorMessages
 
             // 组织相关
             ["ORGANIZATION_NOT_FOUND"] = "组织不存在",
-            ["ORGANIZATION_NAME_ALREADY_EXISTS"] = "组织名称已存在",
-            ["ORGANIZATION_CANNOT_DELETE_WITH_MEMBERS"] = "不能删除有成员的组织",
+            ["ORGANIZATION_CODE_ALREADY_EXISTS"] = "组织编码已存在",
+            ["ORGANIZATION_IN_USE"] = "组织正在使用中，不能删除",
+            ["ORGANIZATION_CANNOT_DELETE_HAS_CHILDREN"] = "组织存在子组织，不能删除",
+            ["ORGANIZATION_CANNOT_BE_PARENT_OF_ITSELF"] = "组织不能将自己设为父组织",
+
 
             // 菜单相关
             ["MENU_NOT_FOUND"] = "菜单不存在",
@@ -126,8 +129,10 @@ public static class ErrorMessages
 
             // 组织相关
             ["ORGANIZATION_NOT_FOUND"] = "Organization not found",
-            ["ORGANIZATION_NAME_ALREADY_EXISTS"] = "Organization name already exists",
-            ["ORGANIZATION_CANNOT_DELETE_WITH_MEMBERS"] = "Cannot delete organization with members",
+            ["ORGANIZATION_CODE_ALREADY_EXISTS"] = "Organization code already exists",
+            ["ORGANIZATION_IN_USE"] = "Organization is in use and cannot be deleted",
+            ["ORGANIZATION_CANNOT_DELETE_HAS_CHILDREN"] = "Organization has children and cannot be deleted",
+            ["ORGANIZATION_CANNOT_BE_PARENT_OF_ITSELF"] = "Organization cannot be parent of itself",
 
             // 菜单相关
             ["MENU_NOT_FOUND"] = "Menu not found",
