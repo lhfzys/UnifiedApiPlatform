@@ -7,7 +7,7 @@ namespace UnifiedApiPlatform.Domain.Entities;
 /// <summary>
 /// 菜单实体
 /// </summary>
-public class Menu : AuditableEntity,IAggregateRoot
+public class Menu : SoftDeletableEntity, IAggregateRoot
 {
     /// <summary>
     /// 租户 ID（系统菜单为 null）
@@ -73,6 +73,7 @@ public class Menu : AuditableEntity,IAggregateRoot
     /// 是否系统菜单（系统菜单不可删除）
     /// </summary>
     public bool IsSystemMenu { get; set; }
+
 
     // 导航属性
     public Menu? Parent { get; set; }
