@@ -13,7 +13,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApiServices(this IServiceCollection services,
         IConfiguration configuration)
     {
-
         var jwtSettings = configuration.GetSection("Jwt");
         var secretKey = jwtSettings["SecretKey"];
         var issuer = jwtSettings["Issuer"];
@@ -56,6 +55,17 @@ public static class ServiceCollectionExtensions
 
             options.ShortSchemaNames = true;
             options.AutoTagPathSegmentIndex = 1;
+
+            options.TagDescriptions = t =>
+            {
+                t["Auth"] = "认证";
+                t["Roles"] = "角色";
+                t["Users"] = "用户";
+                t["Permissions"] = "权限";
+                t["Menus"] = "菜单";
+                t["Tenants"] = "租户";
+                t["Settings"] = "设置";
+            };
         });
 
         // 添加 CORS
