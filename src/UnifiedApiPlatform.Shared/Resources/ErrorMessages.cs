@@ -1,4 +1,5 @@
 using System.Globalization;
+using UnifiedApiPlatform.Shared.Constants;
 
 namespace UnifiedApiPlatform.Shared.Resources;
 
@@ -9,6 +10,17 @@ public static class ErrorMessages
 {
     private static readonly Dictionary<string, Dictionary<string, string>> Messages = new()
     {
+        [ErrorCodes.MenuNotFound] = new() { ["zh-CN"] = "菜单不存在", ["en-US"] = "Menu not found" },
+        [ErrorCodes.MenuCodeAlreadyExists] = new() { ["zh-CN"] = "菜单编码已存在", ["en-US"] = "Menu code already exists" },
+        [ErrorCodes.MenuInUse] =
+            new() { ["zh-CN"] = "菜单正在使用中，不能删除", ["en-US"] = "Menu is in use and cannot be deleted" },
+        [ErrorCodes.MenuCannotDeleteHasChildren] =
+            new() { ["zh-CN"] = "菜单存在子菜单，不能删除", ["en-US"] = "Menu has children and cannot be deleted" },
+        [ErrorCodes.MenuCannotBeParentOfItself] = new()
+        {
+            ["zh-CN"] = "菜单不能将自己设为父菜单", ["en-US"] = "Menu cannot be parent of itself"
+        },
+
         // ==================== 中文消息 ====================
         ["zh-CN"] = new()
         {
@@ -65,11 +77,6 @@ public static class ErrorMessages
             ["ORGANIZATION_CANNOT_DELETE_HAS_CHILDREN"] = "组织存在子组织，不能删除",
             ["ORGANIZATION_CANNOT_BE_PARENT_OF_ITSELF"] = "组织不能将自己设为父组织",
 
-
-            // 菜单相关
-            ["MENU_NOT_FOUND"] = "菜单不存在",
-            ["MENU_CODE_ALREADY_EXISTS"] = "菜单代码已存在",
-            ["MENU_CANNOT_DELETE_WITH_CHILDREN"] = "不能删除有子菜单的菜单",
 
             // 业务相关
             ["DUPLICATE_DATA"] = "数据重复",

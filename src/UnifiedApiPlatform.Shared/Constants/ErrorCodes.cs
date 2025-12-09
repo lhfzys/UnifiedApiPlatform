@@ -133,14 +133,11 @@ public static class ErrorCodes
     public const string OrganizationCannotBeParentOfItself = "ORGANIZATION_CANNOT_BE_PARENT_OF_ITSELF";
 
     // ==================== 菜单相关 (8000-8999) ====================
-    /// <summary>菜单不存在</summary>
     public const string MenuNotFound = "MENU_NOT_FOUND";
-
-    /// <summary>菜单代码已存在</summary>
     public const string MenuCodeAlreadyExists = "MENU_CODE_ALREADY_EXISTS";
-
-    /// <summary>不能删除有子菜单的菜单</summary>
-    public const string MenuCannotDeleteWithChildren = "MENU_CANNOT_DELETE_WITH_CHILDREN";
+    public const string MenuInUse = "MENU_IN_USE";
+    public const string MenuCannotDeleteHasChildren = "MENU_CANNOT_DELETE_HAS_CHILDREN";
+    public const string MenuCannotBeParentOfItself = "MENU_CANNOT_BE_PARENT_OF_ITSELF";
 
     // ==================== 业务相关 (9000+) ====================
     /// <summary>数据重复</summary>
