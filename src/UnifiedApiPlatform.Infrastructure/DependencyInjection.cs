@@ -41,7 +41,7 @@ public static class DependencyInjection
 
         // 认证服务
         services.AddScoped<IPasswordHasher, PasswordHasher>();
-        services.AddScoped<ITokenService, JwtTokenService>();
+        services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
         // 拦截器

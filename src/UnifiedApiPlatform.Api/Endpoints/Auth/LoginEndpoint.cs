@@ -5,7 +5,14 @@ namespace UnifiedApiPlatform.Api.Endpoints.Auth;
 
 public class LoginRequest
 {
-    public string Email { get; set; } = null!;
+    /// <summary>
+    /// 用户名或邮箱
+    /// </summary>
+    public string Account { get; set; } = null!;
+
+    /// <summary>
+    /// 密码
+    /// </summary>
     public string Password { get; set; } = null!;
 }
 
@@ -23,7 +30,7 @@ public class LoginEndpoint  : CommandEndpointBase<LoginRequest, LoginCommand, Lo
         {
             s.Summary = "用户登录";
             s.Description = "使用邮箱和密码登录系统";
-            s.ExampleRequest = new LoginRequest() { Email = "admin@example.com", Password = "Admin@123" };
+            s.ExampleRequest = new LoginRequest() { Account = "admin@example.com", Password = "Admin@123" };
         });
     }
 }

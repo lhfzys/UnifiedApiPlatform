@@ -105,12 +105,9 @@ public class User : MultiTenantEntity, IAggregateRoot
     }
 
     /// <summary>
-    /// 检查账户是否被锁定
+    /// 是否被锁定（计算属性）
     /// </summary>
-    public bool IsLocked(IClock clock)
-    {
-        return LockedUntil.HasValue && LockedUntil.Value > clock.GetCurrentInstant();
-    }
+    public bool IsLocked => LockedUntil.HasValue && LockedUntil.Value > Instant.FromDateTimeUtc(DateTime.UtcNow);
 
     /// <summary>
     /// 激活账户

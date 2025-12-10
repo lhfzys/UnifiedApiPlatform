@@ -1,114 +1,138 @@
 using FluentResults;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 using UnifiedApiPlatform.Application.Common.Interfaces;
-using UnifiedApiPlatform.Application.Common.Models;
+using UnifiedApiPlatform.Domain.Enums;
 using UnifiedApiPlatform.Shared.Constants;
 
 namespace UnifiedApiPlatform.Application.Features.Auth.Commands.RefreshToken;
 
-public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, Result<TokenResult>>
+public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, Result<RefreshTokenResponse>>
 {
-    private readonly IApplicationDbContext _context;
     private readonly ITokenService _tokenService;
+    private readonly IAuditLogService _auditLogService;
     private readonly ILogger<RefreshTokenCommandHandler> _logger;
 
-    public RefreshTokenCommandHandler(
-        IApplicationDbContext context,
-        ITokenService tokenService,
+    public RefreshTokenCommandHandler(ITokenService tokenService, IAuditLogService auditLogService,
         ILogger<RefreshTokenCommandHandler> logger)
     {
-        _context = context;
         _tokenService = tokenService;
+        _auditLogService = auditLogService;
         _logger = logger;
     }
 
-    public async Task<Result<TokenResult>> Handle(
+    public async Task<Result<RefreshTokenResponse>> Handle(
         RefreshTokenCommand request,
         CancellationToken cancellationToken)
     {
+        var ipAddress = request.IpAddress ?? "Unknown";
         try
         {
-            // ✅ 验证刷新令牌
-            var oldRefreshToken = await _tokenService.ValidateRefreshTokenAsync(request.RefreshToken);
+            var validationResult = await _tokenService.ValidateRefreshTokenAsync(
+                request.RefreshToken, cancellationToken);
 
-            if (oldRefreshToken == null)
+            if (!validationResult.IsValid)
             {
-                _logger.LogWarning("刷新令牌无效或已过期");
-                return Result.Fail<TokenResult>(ErrorCodes.RefreshTokenInvalid);
+                _logger.LogWarning("刷新令牌验证失败: {Reason}", validationResult.ErrorMessage);
+
+                // 记录失败的刷新令牌日志
+                await _auditLogService.LogLoginAsync(
+                    validationResult.UserName ?? "Unknown",
+                    LoginType.RefreshToken,
+                    isSuccess: false,
+                    ipAddress,
+                    request.UserAgent,
+                    failureReason: validationResult.ErrorMessage,
+                    userId: validationResult.UserId, cancellationToken: cancellationToken);
+
+                return Result.Fail<RefreshTokenResponse>(
+                    validationResult.ErrorMessage ?? ErrorCodes.RefreshTokenInvalid);
             }
 
-            // 加载用户及其角色权限
-            var user = await _context.Users
-                .Include(u => u.UserRoles)
-                    .ThenInclude(ur => ur.Role)
-                        .ThenInclude(r => r.RolePermissions)
-                .FirstOrDefaultAsync(u => u.Id == oldRefreshToken.UserId, cancellationToken);
+            var user = validationResult.User!;
 
-            if (user == null || !user.IsActive)
+            if (user.LockedUntil.HasValue && user.LockedUntil.Value > Instant.FromDateTimeUtc(DateTime.UtcNow))
             {
-                _logger.LogWarning("用户不存在或未激活: {UserId}", oldRefreshToken.UserId);
-                return Result.Fail<TokenResult>(ErrorCodes.UserNotFound);
+                _logger.LogWarning("刷新令牌失败：账户已锁定 - UserId: {UserId}", user.Id);
+
+                await _auditLogService.LogLoginAsync(
+                    user.UserName,
+                    LoginType.RefreshToken,
+                    isSuccess: false,
+                    ipAddress,
+                    request.UserAgent,
+                    failureReason: "账户已锁定",
+                    userId: user.Id, cancellationToken: cancellationToken);
+
+                return Result.Fail<RefreshTokenResponse>("账户已锁定");
             }
 
-            // ✅ 准备 Token Claims
-            var roles = user.UserRoles.Select(ur => ur.Role.Name).ToList();
+            if (!user.IsActive)
+            {
+                _logger.LogWarning("刷新令牌失败：账户未激活 - UserId: {UserId}", user.Id);
+
+                await _auditLogService.LogLoginAsync(
+                    user.UserName,
+                    LoginType.RefreshToken,
+                    isSuccess: false,
+                    ipAddress,
+                    request.UserAgent,
+                    failureReason: "账户未激活",
+                    userId: user.Id, cancellationToken: cancellationToken);
+
+                return Result.Fail<RefreshTokenResponse>(ErrorCodes.UserAccountInactive);
+            }
+
+            await _tokenService.RevokeRefreshTokenAsync(
+                request.RefreshToken,
+                ipAddress,
+                "Replaced by new token",
+                cancellationToken);
+
             var permissions = user.UserRoles
                 .SelectMany(ur => ur.Role.RolePermissions)
-                .Select(rp => rp.PermissionCode)
+                .Select(rp => rp.Permission.Code)
                 .Distinct()
                 .ToList();
 
-            var tokenClaims = new TokenClaims
-            {
-                UserId = user.Id.ToString(),
-                UserName = user.UserName,
-                Email = user.Email,
-                TenantId = user.TenantId,
-                OrganizationId = user.OrganizationId?.ToString(),
-                Roles = roles,
-                Permissions = permissions
-            };
-
-            // ✅ 生成新的 Access Token
-            var newAccessToken = _tokenService.GenerateAccessToken(tokenClaims);
-
-            // ✅ 生成新的 Refresh Token
-            var deviceInfo = oldRefreshToken.DeviceInfo;
-            var newRefreshToken = await _tokenService.GenerateRefreshTokenAsync(
+            var (accessToken, newRefreshToken, expiresAt) = await _tokenService.GenerateTokensAsync(
                 user.Id,
+                user.UserName,
+                user.Email,
                 user.TenantId,
-                request.IpAddress ?? "Unknown",
-                deviceInfo
-            );
+                permissions,
+                cancellationToken);
 
-            // ✅ 撤销旧的 Refresh Token（令牌轮换）
-            await _tokenService.RevokeRefreshTokenAsync(
-                oldRefreshToken.Token,
-                request.IpAddress ?? "Unknown",
-                "Replaced by new refresh token"
-            );
+            await _auditLogService.LogLoginAsync(
+                user.UserName,
+                LoginType.RefreshToken,
+                isSuccess: true,
+                ipAddress,
+                request.UserAgent,
+                userId: user.Id, cancellationToken: cancellationToken);
 
-            // 可选：将旧令牌标记为被替换
-            oldRefreshToken.ReplacedByToken = newRefreshToken.Token;
-            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("刷新令牌成功: UserId: {UserId}, UserName: {UserName}",
+                user.Id, user.UserName);
 
-            _logger.LogInformation("令牌刷新成功: {UserId}", user.Id);
-
-            // ✅ 返回新令牌
-            return Result.Ok(new TokenResult
+            return Result.Ok(new RefreshTokenResponse
             {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken.Token,
-                ExpiresAt = newRefreshToken.ExpiresAt.ToDateTimeUtc(),
-                TokenType = "Bearer"
+                AccessToken = accessToken, RefreshToken = newRefreshToken, ExpiresAt = expiresAt.ToDateTimeUtc()
             });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "刷新令牌失败");
-            return Result.Fail<TokenResult>("刷新令牌失败，请重新登录");
+            _logger.LogError(ex, "刷新令牌异常");
+
+            await _auditLogService.LogLoginAsync(
+                "Unknown",
+                LoginType.RefreshToken,
+                isSuccess: false,
+                ipAddress,
+                request.UserAgent,
+                failureReason: $"系统异常: {ex.Message}", cancellationToken: cancellationToken);
+
+            return Result.Fail<RefreshTokenResponse>("刷新令牌失败");
         }
     }
 }

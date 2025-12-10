@@ -10,7 +10,7 @@ public class RefreshTokenRequest
 }
 
 public class RefreshTokenEndpoint(IMediator mediator)
-    : CommandEndpointBase<RefreshTokenRequest, RefreshTokenCommand, TokenResult>(mediator)
+    : CommandEndpointBase<RefreshTokenRequest, RefreshTokenCommand, RefreshTokenResponse>(mediator)
 {
     public override void Configure()
     {
