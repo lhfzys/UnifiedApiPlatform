@@ -1,4 +1,6 @@
 using System.Reflection;
+using IP2Region.Net.Abstractions;
+using IP2Region.Net.XDB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,7 +68,7 @@ public static class DependencyInjection
                 .EnableDetailedErrors(databaseSettings.EnableSensitiveDataLogging);
 
             // 添加拦截器
-           // var auditInterceptor = serviceProvider.GetRequiredService<AuditInterceptor>();
+            // var auditInterceptor = serviceProvider.GetRequiredService<AuditInterceptor>();
             var softDeleteInterceptor = serviceProvider.GetRequiredService<SoftDeleteInterceptor>();
             var domainEventInterceptor = serviceProvider.GetRequiredService<DomainEventInterceptor>();
 
@@ -78,6 +80,27 @@ public static class DependencyInjection
 
         // 添加审计日志服务
         services.AddScoped<IAuditLogService, AuditLogService>();
+
+        // ==================== 注册 IP 定位服务 ====================
+        // 获取 IP 数据库文件路径
+        var ipDbPath = configuration["IpLocation:DatabasePath"] ?? "Data/ip2region.xdb";
+        var fullPath = Path.Combine(AppContext.BaseDirectory, ipDbPath);
+        // 检查文件是否存在
+        if (!File.Exists(fullPath))
+        {
+            throw new FileNotFoundException(
+                $"IP2Region 数据库文件不存在: {fullPath}。" +
+                "请从 https://github.com/lionsoul2014/ip2region 下载 ip2region.xdb 文件。");
+        }
+
+        // 注册 IP2Region Searcher（单例）
+        services.AddSingleton<ISearcher>(sp =>
+        {
+            return new Searcher(CachePolicy.Content, fullPath);
+        });
+
+        // 注册 IP 定位服务
+        services.AddScoped<IIpLocationService, IpLocationService>();
 
         return services;
     }

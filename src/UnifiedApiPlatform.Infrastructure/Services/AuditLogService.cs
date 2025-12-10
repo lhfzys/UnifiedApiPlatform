@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using UAParser;
 using UnifiedApiPlatform.Application.Common.Interfaces;
@@ -14,15 +13,15 @@ public class AuditLogService : IAuditLogService
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
     private readonly IClock _clock;
+    private readonly IIpLocationService _ipLocationService;
 
-    public AuditLogService(
-        IApplicationDbContext context,
-        ICurrentUserService currentUser,
-        IClock clock)
+    public AuditLogService(IApplicationDbContext context, ICurrentUserService currentUser,
+        IClock clock, IIpLocationService ipLocationService)
     {
         _context = context;
         _currentUser = currentUser;
         _clock = clock;
+        _ipLocationService = ipLocationService;
     }
 
     public async Task LogOperationAsync(
@@ -88,6 +87,8 @@ public class AuditLogService : IAuditLogService
             // 解析 User-Agent
             var (browser, os, deviceType) = ParseUserAgent(userAgent);
 
+            var location = _ipLocationService.GetFormattedLocation(ipAddress);
+
             var loginLog = new LoginLog
             {
                 Id = Guid.NewGuid(),
@@ -102,7 +103,7 @@ public class AuditLogService : IAuditLogService
                 Browser = browser,
                 OperatingSystem = os,
                 DeviceType = deviceType,
-                Location = null, // TODO: 可以集成 IP 地理位置服务
+                Location = location,
                 CreatedAt = _clock.GetCurrentInstant()
             };
 
@@ -133,8 +134,8 @@ public class AuditLogService : IAuditLogService
             var browser = $"{clientInfo.UA.Family} {clientInfo.UA.Major}";
             var os = $"{clientInfo.OS.Family} {clientInfo.OS.Major}";
             var deviceType = clientInfo.Device.IsSpider ? "Bot" :
-                           clientInfo.Device.Family.Contains("Mobile") ? "Mobile" :
-                           clientInfo.Device.Family.Contains("Tablet") ? "Tablet" : "Desktop";
+                clientInfo.Device.Family.Contains("Mobile") ? "Mobile" :
+                clientInfo.Device.Family.Contains("Tablet") ? "Tablet" : "Desktop";
 
             return (browser, os, deviceType);
         }
