@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using UnifiedApiPlatform.Application.Common.Interfaces;
 using UnifiedApiPlatform.Shared.Constants;
@@ -13,25 +14,63 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string? UserId => _httpContextAccessor.HttpContext?.User
-        ?.FindFirst(CustomClaimTypes.UserId)?.Value;
+    /// <summary>
+    /// 用户 ID
+    /// </summary>
+    public string? UserId => GetClaimValue(CustomClaimTypes.UserId)
+                             ?? GetClaimValue(ClaimTypes.NameIdentifier);
 
-    public string? TenantId => _httpContextAccessor.HttpContext?.User
-        ?.FindFirst(CustomClaimTypes.TenantId)?.Value;
+    /// <summary>
+    /// 租户 ID
+    /// </summary>
+    public string? TenantId => GetClaimValue(CustomClaimTypes.TenantId);
 
-    public string? Email => _httpContextAccessor.HttpContext?.User
-        ?.FindFirst(CustomClaimTypes.Email)?.Value;
+    /// <summary>
+    /// 邮箱
+    /// </summary>
+    public string? Email => GetClaimValue(CustomClaimTypes.Email)
+                            ?? GetClaimValue(ClaimTypes.Email);
 
-    public string? UserName => _httpContextAccessor.HttpContext?.User
-        ?.FindFirst(CustomClaimTypes.UserName)?.Value;
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    public string? UserName => GetClaimValue(CustomClaimTypes.UserName)
+                               ?? GetClaimValue(ClaimTypes.Name);
 
+    /// <summary>
+    /// 是否已认证
+    /// </summary>
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
-    public IEnumerable<string> Roles => _httpContextAccessor.HttpContext?.User
-        .FindAll(CustomClaimTypes.Role)
-        .Select(c => c.Value) ?? Enumerable.Empty<string>();
+    /// <summary>
+    /// 角色列表
+    /// </summary>
+    public IEnumerable<string> Roles => GetClaimValues(CustomClaimTypes.Role)
+        .Concat(GetClaimValues(ClaimTypes.Role))
+        .Distinct();
 
-    public IEnumerable<string> Permissions => _httpContextAccessor.HttpContext?.User
-        .FindAll(CustomClaimTypes.Permission)
-        .Select(c => c.Value) ?? Enumerable.Empty<string>();
+    /// <summary>
+    /// 权限列表
+    /// </summary>
+    public IEnumerable<string> Permissions => GetClaimValues(CustomClaimTypes.Permission);
+
+    /// <summary>
+    /// 获取 Claim 值
+    /// </summary>
+    private string? GetClaimValue(string claimType)
+    {
+        return _httpContextAccessor.HttpContext?.User
+            ?.FindFirst(claimType)?.Value;
+    }
+
+    /// <summary>
+    /// 获取多个 Claim 值
+    /// </summary>
+    private IEnumerable<string> GetClaimValues(string claimType)
+    {
+        return _httpContextAccessor.HttpContext?.User
+                   ?.FindAll(claimType)
+                   .Select(c => c.Value)
+               ?? Enumerable.Empty<string>();
+    }
 }

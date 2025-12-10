@@ -10,6 +10,7 @@ using NodaTime;
 using UnifiedApiPlatform.Application.Common.Interfaces;
 using UnifiedApiPlatform.Domain.Entities;
 using UnifiedApiPlatform.Infrastructure.Options;
+using UnifiedApiPlatform.Shared.Constants;
 
 namespace UnifiedApiPlatform.Infrastructure.Identity.Services;
 
@@ -219,15 +220,19 @@ public class TokenService : ITokenService
 
         var claims = new List<Claim>
         {
+            new(CustomClaimTypes.UserId, userId.ToString()),
+            new(CustomClaimTypes.UserName, userName),
+            new(CustomClaimTypes.Email, email),
+            new(CustomClaimTypes.TenantId, tenantId),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+
             new(ClaimTypes.NameIdentifier, userId.ToString()),
             new(ClaimTypes.Name, userName),
-            new(ClaimTypes.Email, email),
-            new("tenant_id", tenantId),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(ClaimTypes.Email, email)
         };
 
         // 添加权限声明
-        claims.AddRange(permissions.Select(p => new Claim("permission", p)));
+        claims.AddRange(permissions.Select(p => new Claim(CustomClaimTypes.Permission, p)));
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
