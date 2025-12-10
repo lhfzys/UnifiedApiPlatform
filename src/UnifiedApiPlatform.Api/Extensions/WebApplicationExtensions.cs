@@ -3,6 +3,7 @@ using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using UnifiedApiPlatform.Api.Middlewares;
 using UnifiedApiPlatform.Api.PreProcessors;
 using UnifiedApiPlatform.Infrastructure.Middleware;
 using UnifiedApiPlatform.Infrastructure.Persistence;
@@ -42,6 +43,8 @@ public static class WebApplicationExtensions
         // 认证和授权
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseMiddleware<AuditLogMiddleware>();
 
         // FastEndpoints
         app.UseFastEndpoints(config =>

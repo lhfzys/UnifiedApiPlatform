@@ -41,12 +41,18 @@ public class AuditLogService : IAuditLogService
     {
         try
         {
+            var userId = _currentUser.IsAuthenticated && !string.IsNullOrEmpty(_currentUser.UserId)
+                ? Guid.Parse(_currentUser.UserId)
+                : (Guid?)null;
+            var userName = _currentUser.IsAuthenticated && !string.IsNullOrEmpty(_currentUser.UserName)
+                ? _currentUser.UserName
+                : null;
             var auditLog = new AuditLog
             {
                 Id = Guid.NewGuid(),
                 TenantId = _currentUser.TenantId,
-                UserId = string.IsNullOrEmpty(_currentUser.UserId) ? null : Guid.Parse(_currentUser.UserId),
-                UserName = _currentUser.UserName,
+                UserId = userId,
+                UserName = userName,
                 Action = action,
                 EntityType = entityType,
                 EntityId = entityId,
