@@ -16,11 +16,21 @@ public static class ErrorMessages
             new() { ["zh-CN"] = "菜单正在使用中，不能删除", ["en-US"] = "Menu is in use and cannot be deleted" },
         [ErrorCodes.MenuCannotDeleteHasChildren] =
             new() { ["zh-CN"] = "菜单存在子菜单，不能删除", ["en-US"] = "Menu has children and cannot be deleted" },
-        [ErrorCodes.MenuCannotBeParentOfItself] = new()
-        {
-            ["zh-CN"] = "菜单不能将自己设为父菜单", ["en-US"] = "Menu cannot be parent of itself"
-        },
-
+        [ErrorCodes.MenuCannotBeParentOfItself] =
+            new() { ["zh-CN"] = "菜单不能将自己设为父菜单", ["en-US"] = "Menu cannot be parent of itself" },
+        [ErrorCodes.TenantNotFound] = new() { ["zh-CN"] = "租户不存在", ["en-US"] = "Tenant not found" },
+        [ErrorCodes.TenantIdentifierAlreadyExists] =
+            new() { ["zh-CN"] = "租户标识已存在", ["en-US"] = "Tenant identifier already exists" },
+        [ErrorCodes.TenantCannotBeDeleted] =
+            new() { ["zh-CN"] = "租户不能被删除，存在关联数据", ["en-US"] = "Tenant cannot be deleted, associated data exists" },
+        [ErrorCodes.TenantIsInactive] = new() { ["zh-CN"] = "租户已停用", ["en-US"] = "Tenant is inactive" },
+        [ErrorCodes.DefaultTenantCannotBeModified] =
+            new() { ["zh-CN"] = "默认租户不能被修改", ["en-US"] = "Default tenant cannot be modified" },
+        [ErrorCodes.DefaultTenantCannotBeDeleted] =
+            new() { ["zh-CN"] = "默认租户不能被删除", ["en-US"] = "Default tenant cannot be deleted" },
+        [ErrorCodes.TenantUserLimitReached] =
+            new() { ["zh-CN"] = "租户用户数量已达上限", ["en-US"] = "Tenant user limit reached" },
+        [ErrorCodes.TenantStorageExceeded] = new() { ["zh-CN"] = "租户存储空间不足", ["en-US"] = "Tenant storage exceeded" },
         // ==================== 中文消息 ====================
         ["zh-CN"] = new()
         {

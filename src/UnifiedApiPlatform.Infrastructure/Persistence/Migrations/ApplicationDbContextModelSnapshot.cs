@@ -1787,6 +1787,7 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -1794,9 +1795,14 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("activated_at");
 
-                    b.Property<string>("ContactEmail")
+                    b.Property<string>("Address")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
+                        .HasColumnName("address");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("contact_email");
 
                     b.Property<string>("ContactName")
@@ -1814,9 +1820,18 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("created_by");
+
+                    b.Property<Instant?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("deleted_by");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -1833,16 +1848,28 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
                     b.Property<int>("MaxApiCallsPerDay")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
+                        .HasDefaultValue(100000)
                         .HasColumnName("max_api_calls_per_day");
 
                     b.Property<long>("MaxStorageInBytes")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
+                        .HasDefaultValue(10737418240L)
                         .HasColumnName("max_storage_in_bytes");
 
                     b.Property<int>("MaxUsers")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
+                        .HasDefaultValue(100)
                         .HasColumnName("max_users");
 
                     b.Property<string>("Name")
@@ -1858,7 +1885,9 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("row_version");
 
                     b.Property<long>("StorageUsedInBytes")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
+                        .HasDefaultValue(0L)
                         .HasColumnName("storage_used_in_bytes");
 
                     b.Property<Instant?>("SuspendedAt")
@@ -1866,8 +1895,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("suspended_at");
 
                     b.Property<string>("SuspendedReason")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("suspended_reason");
 
                     b.Property<Instant?>("UpdatedAt")
@@ -1875,16 +1904,25 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("updated_by");
 
                     b.HasKey("Id")
                         .HasName("pk_tenants");
 
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_tenants_created_at");
+
                     b.HasIndex("Identifier")
                         .IsUnique()
                         .HasDatabaseName("ix_tenants_identifier");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_tenants_is_active");
+
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("ix_tenants_is_deleted");
 
                     b.ToTable("tenants", (string)null);
                 });

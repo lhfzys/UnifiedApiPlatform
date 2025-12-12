@@ -305,26 +305,30 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 name: "tenants",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    id = table.Column<Guid>(type: "uuid", maxLength: 50, nullable: false),
                     identifier = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     activated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
                     suspended_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
-                    suspended_reason = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    max_users = table.Column<int>(type: "integer", nullable: false),
-                    max_storage_in_bytes = table.Column<long>(type: "bigint", nullable: false),
-                    storage_used_in_bytes = table.Column<long>(type: "bigint", nullable: false),
-                    max_api_calls_per_day = table.Column<int>(type: "integer", nullable: false),
+                    suspended_reason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    max_users = table.Column<int>(type: "integer", nullable: false, defaultValue: 100),
+                    max_storage_in_bytes = table.Column<long>(type: "bigint", nullable: false, defaultValue: 10737418240L),
+                    storage_used_in_bytes = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    max_api_calls_per_day = table.Column<int>(type: "integer", nullable: false, defaultValue: 100000),
                     contact_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    contact_email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    contact_email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     contact_phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    address = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
-                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
+                    updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
+                    deleted_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1025,10 +1029,25 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_tenants_created_at",
+                table: "tenants",
+                column: "created_at");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_tenants_identifier",
                 table: "tenants",
                 column: "identifier",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_tenants_is_active",
+                table: "tenants",
+                column: "is_active");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_tenants_is_deleted",
+                table: "tenants",
+                column: "is_deleted");
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_roles_role_id",

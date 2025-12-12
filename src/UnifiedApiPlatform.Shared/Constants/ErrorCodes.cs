@@ -86,14 +86,33 @@ public static class ErrorCodes
     /// <summary>租户不存在</summary>
     public const string TenantNotFound = "TENANT_NOT_FOUND";
 
+    /// <summary>租户标识已存在</summary>
+    public const string TenantIdentifierAlreadyExists = "TENANT_IDENTIFIER_ALREADY_EXISTS";
+
+    /// <summary>租户不能被删除</summary>
+    public const string TenantCannotBeDeleted = "TENANT_CANNOT_BE_DELETED";
+
+    /// <summary>租户已停用</summary>
+    public const string TenantIsInactive = "TENANT_IS_INACTIVE";
+
+    /// <summary>默认租户不能被修改</summary>
+    public const string DefaultTenantCannotBeModified = "DEFAULT_TENANT_CANNOT_BE_MODIFIED";
+
+    /// <summary>默认租户不能被删除</summary>
+    public const string DefaultTenantCannotBeDeleted = "DEFAULT_TENANT_CANNOT_BE_DELETED";
+
+    /// <summary>租户用户数量已达上限</summary>
+    public const string TenantUserLimitReached = "TENANT_USER_LIMIT_REACHED";
+
+    /// <summary>租户存储空间不足</summary>
+    public const string TenantStorageExceeded = "TENANT_STORAGE_EXCEEDED";
+
     /// <summary>租户未激活</summary>
     public const string TenantInactive = "TENANT_INACTIVE";
 
     /// <summary>租户已暂停</summary>
     public const string TenantSuspended = "TENANT_SUSPENDED";
 
-    /// <summary>租户标识已存在</summary>
-    public const string TenantIdentifierAlreadyExists = "TENANT_IDENTIFIER_ALREADY_EXISTS";
 
     // ==================== 角色权限相关 (5000-5999) ====================
     /// <summary>角色不存在</summary>
