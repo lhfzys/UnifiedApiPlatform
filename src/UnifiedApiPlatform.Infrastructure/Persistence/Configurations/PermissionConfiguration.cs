@@ -31,6 +31,10 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
         builder.Property(p => p.Description)
             .HasMaxLength(500);
 
+        builder.Property(p => p.SortOrder)
+            .IsRequired()
+            .HasDefaultValue(0);
+
         // 配置审计字段
         builder.Property(p => p.CreatedAt).IsRequired();
         builder.Property(p => p.CreatedBy).HasMaxLength(50);

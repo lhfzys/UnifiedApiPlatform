@@ -13,6 +13,8 @@ public class Permission: MultiTenantEntity, IAggregateRoot
     public string Category { get; set; } = null!;
     public string? Description { get; set; }
     public bool IsSystemPermission { get; set; }
+    public bool IsActive { get; set; } = true;
+    public int SortOrder { get; set; }
     // 导航属性
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 

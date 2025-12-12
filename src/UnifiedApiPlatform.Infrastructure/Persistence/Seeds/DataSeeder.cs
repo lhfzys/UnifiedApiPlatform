@@ -118,13 +118,19 @@ public class DataSeeder
                     Category = definition.Category,
                     Description = definition.Description,
                     IsSystemPermission = true,
+                    SortOrder = definition.SortOrder,
+                    IsActive = true,
                     CreatedAt = now
                 };
 
                 _context.Permissions.Add(permission);
                 addedCount++;
 
-                _logger.LogDebug("添加新权限: {Code}", definition.Code);
+                _logger.LogDebug(
+                    "添加新权限: {Code} - {Name} (排序: {SortOrder})",
+                    definition.Code,
+                    definition.Name,
+                    definition.SortOrder);
             }
             else
             {
@@ -145,6 +151,18 @@ public class DataSeeder
                 if (existing.Description != definition.Description)
                 {
                     existing.Description = definition.Description;
+                    changed = true;
+                }
+
+                if (existing.SortOrder != definition.SortOrder)
+                {
+                    existing.SortOrder = definition.SortOrder;
+                    changed = true;
+                }
+
+                if (existing.IsSystemPermission != definition.IsSystem)
+                {
+                    existing.IsSystemPermission = definition.IsSystem;
                     changed = true;
                 }
 

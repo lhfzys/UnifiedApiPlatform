@@ -30,17 +30,24 @@ public record PermissionDefinition
     /// </summary>
     public int SortOrder { get; init; }
 
+    /// <summary>
+    /// 是否为系统权限（不可删除）
+    /// </summary>
+    public bool IsSystem { get; init; }
+
     public PermissionDefinition(
         string code,
         string name,
         string category,
         string? description = null,
-        int sortOrder = 0)
+        int sortOrder = 0,
+        bool isSystem = true)
     {
         Code = code;
         Name = name;
         Category = category;
         Description = description;
         SortOrder = sortOrder;
+        IsSystem = isSystem;
     }
 }

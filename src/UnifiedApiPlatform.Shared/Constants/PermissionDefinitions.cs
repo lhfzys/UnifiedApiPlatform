@@ -3,94 +3,264 @@ using UnifiedApiPlatform.Shared.Models;
 namespace UnifiedApiPlatform.Shared.Constants;
 
 /// <summary>
-/// 系统权限定义
+/// 所有权限定义
 /// </summary>
 public static class PermissionDefinitions
 {
+    public static readonly List<PermissionDefinition> All = new()
+    {
+        // ==================== 用户管理 (1000-1999) ====================
+        new(PermissionCodes.UsersView,
+            "查看用户",
+            PermissionCategories.UserManagement,
+            "查看用户列表和详情",
+            1000),
+        new(PermissionCodes.UsersCreate,
+            "创建用户",
+            PermissionCategories.UserManagement,
+            "创建新用户账号",
+            1100),
+        new(PermissionCodes.UsersUpdate,
+            "更新用户",
+            PermissionCategories.UserManagement,
+            "编辑用户信息",
+            1200),
+        new(PermissionCodes.UsersDelete,
+            "删除用户",
+            PermissionCategories.UserManagement,
+            "删除用户账号",
+            1300),
+        new(PermissionCodes.UsersResetPassword,
+            "重置密码",
+            PermissionCategories.UserManagement,
+            "重置用户密码",
+            1400),
+        new(PermissionCodes.UsersActivate,
+            "激活用户",
+            PermissionCategories.UserManagement,
+            "激活已停用的用户",
+            1500),
+        new(PermissionCodes.UsersDeactivate,
+            "停用用户",
+            PermissionCategories.UserManagement,
+            "停用用户账号",
+            1600),
+        new(PermissionCodes.UsersExport,
+            "导出用户",
+            PermissionCategories.UserManagement,
+            "导出用户数据",
+            1700),
+        new(PermissionCodes.UsersImport,
+            "导入用户",
+            PermissionCategories.UserManagement,
+            "批量导入用户",
+            1800),
+
+        // ==================== 角色管理 (2000-2999) ====================
+        new(PermissionCodes.RolesView,
+            "查看角色",
+            PermissionCategories.RoleManagement,
+            "查看角色列表和详情",
+            2000),
+        new(PermissionCodes.RolesCreate,
+            "创建角色",
+            PermissionCategories.RoleManagement,
+            "创建新角色",
+            2100),
+        new(PermissionCodes.RolesUpdate,
+            "更新角色",
+            PermissionCategories.RoleManagement,
+            "编辑角色信息",
+            2200),
+        new(PermissionCodes.RolesDelete,
+            "删除角色",
+            PermissionCategories.RoleManagement,
+            "删除角色",
+            2300),
+        new(PermissionCodes.RolesAssignPermissions,
+            "分配权限",
+            PermissionCategories.RoleManagement,
+            "为角色分配或移除权限",
+            2400),
+
+        // ==================== 权限管理 (3000-3999) ====================
+        new(PermissionCodes.PermissionsView,
+            "查看权限",
+            PermissionCategories.PermissionManagement,
+            "查看权限列表和详情",
+            3000),
+        new(PermissionCodes.PermissionsCreate,
+            "创建权限",
+            PermissionCategories.PermissionManagement,
+            "创建自定义权限",
+            3100),
+        new(PermissionCodes.PermissionsUpdate,
+            "更新权限",
+            PermissionCategories.PermissionManagement,
+            "编辑权限信息",
+            3200),
+        new(PermissionCodes.PermissionsDelete,
+            "删除权限",
+            PermissionCategories.PermissionManagement,
+            "删除自定义权限",
+            3300),
+
+        // ==================== 租户管理 (4000-4999) ====================
+        new(PermissionCodes.TenantsView,
+            "查看租户",
+            PermissionCategories.TenantManagement,
+            "查看租户列表和详情",
+            4000),
+        new(PermissionCodes.TenantsCreate,
+            "创建租户",
+            PermissionCategories.TenantManagement,
+            "创建新租户",
+            4100),
+        new(PermissionCodes.TenantsUpdate,
+            "更新租户",
+            PermissionCategories.TenantManagement,
+            "编辑租户信息",
+            4200),
+        new(PermissionCodes.TenantsDelete,
+            "删除租户",
+            PermissionCategories.TenantManagement,
+            "删除租户",
+            4300),
+
+        // ==================== 组织管理 (5000-5999) ====================
+        new(PermissionCodes.OrganizationsView,
+            "查看组织",
+            PermissionCategories.OrganizationManagement,
+            "查看组织架构",
+            5000),
+        new(PermissionCodes.OrganizationsCreate,
+            "创建组织",
+            PermissionCategories.OrganizationManagement,
+            "创建组织部门",
+            5100),
+        new(PermissionCodes.OrganizationsUpdate,
+            "更新组织",
+            PermissionCategories.OrganizationManagement,
+            "编辑组织信息",
+            5200),
+        new(PermissionCodes.OrganizationsDelete,
+            "删除组织",
+            PermissionCategories.OrganizationManagement,
+            "删除组织部门",
+            5300),
+
+        // ==================== 菜单管理 (6000-6999) ====================
+        new(PermissionCodes.MenusView,
+            "查看菜单",
+            PermissionCategories.MenuManagement,
+            "查看菜单列表和详情",
+            6000),
+        new(PermissionCodes.MenusCreate,
+            "创建菜单",
+            PermissionCategories.MenuManagement,
+            "创建新菜单",
+            6100),
+        new(PermissionCodes.MenusUpdate,
+            "更新菜单",
+            PermissionCategories.MenuManagement,
+            "编辑菜单信息",
+            6200),
+        new(PermissionCodes.MenusDelete,
+            "删除菜单",
+            PermissionCategories.MenuManagement,
+            "删除菜单",
+            6300),
+
+        // ==================== 审计日志 (7000-7999) ====================
+        new(PermissionCodes.AuditLogsView,
+            "查看审计日志",
+            PermissionCategories.AuditLogs,
+            "查看操作日志和登录日志",
+            7000),
+        new(PermissionCodes.AuditLogsExport,
+            "导出审计日志",
+            PermissionCategories.AuditLogs,
+            "导出审计日志数据",
+            7100),
+        new(PermissionCodes.AuditLogsDelete,
+            "删除审计日志",
+            PermissionCategories.AuditLogs,
+            "删除历史审计日志",
+            7200),
+        new(PermissionCodes.AuditLogsStatistics,
+            "查看审计统计",
+            PermissionCategories.AuditLogs,
+            "查看审计日志统计分析",
+            7300),
+
+        // ==================== 文件管理 (8000-8999) ====================
+        new(PermissionCodes.FilesView,
+            "查看文件",
+            PermissionCategories.FileManagement,
+            "查看文件列表",
+            8000),
+        new(PermissionCodes.FilesUpload,
+            "上传文件",
+            PermissionCategories.FileManagement,
+            "上传新文件",
+            8100),
+        new(PermissionCodes.FilesDownload,
+            "下载文件",
+            PermissionCategories.FileManagement,
+            "下载文件",
+            8200),
+        new(PermissionCodes.FilesDelete,
+            "删除文件",
+            PermissionCategories.FileManagement,
+            "删除文件",
+            8300),
+
+        // ==================== 系统设置 (11000-11999) ====================
+        new(PermissionCodes.SystemSettingsView,
+            "查看系统设置",
+            PermissionCategories.SystemSettings,
+            "查看系统配置",
+            11000),
+        new(PermissionCodes.SystemSettingsUpdate,
+            "更新系统设置",
+            PermissionCategories.SystemSettings,
+            "修改系统配置",
+            11100),
+
+        // ==================== 系统管理 (12000-12999) ====================
+        new(PermissionCodes.SystemBackup,
+            "系统备份",
+            PermissionCategories.SystemManagement,
+            "执行系统数据备份",
+            12000),
+        new(PermissionCodes.SystemRestore,
+            "系统恢复",
+            PermissionCategories.SystemManagement,
+            "恢复系统数据",
+            12100),
+        new(PermissionCodes.SystemLogs,
+            "查看系统日志",
+            PermissionCategories.SystemManagement,
+            "查看系统运行日志",
+            12200),
+    };
+
     /// <summary>
-    /// 所有权限定义
+    /// 按分类分组
     /// </summary>
-    public static readonly List<PermissionDefinition> All =
-    [
-        // ==================== 系统管理 ====================
-        new(PermissionCodes.SystemSettings, "系统设置", PermissionCategories.SystemManagement,
-            "配置系统参数和选项", 1000),
-        new(PermissionCodes.SystemLogs, "系统日志", PermissionCategories.SystemManagement,
-            "查看系统操作日志", 1001),
-        new(PermissionCodes.SystemMonitor, "系统监控", PermissionCategories.SystemManagement,
-            "监控系统运行状态", 1002),
-
-        // ==================== 用户管理 ====================
-        new(PermissionCodes.UsersView, "查看用户", PermissionCategories.UserManagement,
-            "查看用户列表和详情", 2000),
-        new(PermissionCodes.UsersCreate, "创建用户", PermissionCategories.UserManagement,
-            "创建新用户", 2001),
-        new(PermissionCodes.UsersUpdate, "更新用户", PermissionCategories.UserManagement,
-            "修改用户信息", 2002),
-        new(PermissionCodes.UsersDelete, "删除用户", PermissionCategories.UserManagement,
-            "删除用户", 2003),
-
-        // ==================== 角色管理 ====================
-        new(PermissionCodes.RolesView, "查看角色", PermissionCategories.RoleManagement,
-            "查看角色列表和详情", 3000),
-        new(PermissionCodes.RolesCreate, "创建角色", PermissionCategories.RoleManagement,
-            "创建新角色", 3001),
-        new(PermissionCodes.RolesUpdate, "更新角色", PermissionCategories.RoleManagement,
-            "修改角色信息", 3002),
-        new(PermissionCodes.RolesDelete, "删除角色", PermissionCategories.RoleManagement,
-            "删除角色", 3003),
-
-        // ==================== 权限管理 ====================
-        new(PermissionCodes.PermissionsView, "查看权限", PermissionCategories.PermissionManagement,
-            "查看系统权限列表", 4000),
-
-        // ==================== 组织管理 ====================
-        new(PermissionCodes.OrganizationsView, "查看组织", PermissionCategories.OrganizationManagement,
-            "查看组织架构", 5000),
-        new(PermissionCodes.OrganizationsCreate, "创建组织", PermissionCategories.OrganizationManagement,
-            "创建新组织", 5001),
-        new(PermissionCodes.OrganizationsUpdate, "更新组织", PermissionCategories.OrganizationManagement,
-            "修改组织信息", 5002),
-        new(PermissionCodes.OrganizationsDelete, "删除组织", PermissionCategories.OrganizationManagement,
-            "删除组织", 5003),
-
-        // ==================== 菜单管理 ====================
-        new(PermissionCodes.MenusView, "查看菜单", PermissionCategories.MenuManagement,
-            "查看菜单配置", 6000),
-        new(PermissionCodes.MenusCreate, "创建菜单", PermissionCategories.MenuManagement,
-            "创建新菜单", 6001),
-        new(PermissionCodes.MenusUpdate, "更新菜单", PermissionCategories.MenuManagement,
-            "修改菜单配置", 6002),
-        new(PermissionCodes.MenusDelete, "删除菜单", PermissionCategories.MenuManagement,
-            "删除菜单", 6003),
-
-        // ==================== 文件管理 ====================
-        new(PermissionCodes.FilesView, "查看文件", PermissionCategories.FileManagement,
-            "查看文件列表", 7000),
-        new(PermissionCodes.FilesUpload, "上传文件", PermissionCategories.FileManagement,
-            "上传新文件", 7001),
-        new(PermissionCodes.FilesDelete, "删除文件", PermissionCategories.FileManagement,
-            "删除文件", 7002),
-    ];
+    public static Dictionary<string, List<PermissionDefinition>> GetByCategory()
+    {
+        return All.GroupBy(p => p.Category)
+            .ToDictionary(g => g.Key, g => g.OrderBy(p => p.SortOrder).ToList());
+    }
 
     /// <summary>
-    /// 按分类获取权限
+    /// 获取指定分类的权限
     /// </summary>
     public static List<PermissionDefinition> GetByCategory(string category)
     {
         return All.Where(p => p.Category == category)
             .OrderBy(p => p.SortOrder)
-            .ToList();
-    }
-
-    /// <summary>
-    /// 获取所有分类
-    /// </summary>
-    public static List<string> GetAllCategories()
-    {
-        return All.Select(p => p.Category)
-            .Distinct()
-            .OrderBy(c => c)
             .ToList();
     }
 }

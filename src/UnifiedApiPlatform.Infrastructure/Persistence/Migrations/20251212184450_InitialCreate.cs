@@ -197,6 +197,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                     category = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     is_system_permission = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false),
+                    sort_order = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
                     created_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
