@@ -1,6 +1,5 @@
 ﻿using UnifiedApiPlatform.Application.Common.Models;
 using UnifiedApiPlatform.Application.Common.Queries;
-using UnifiedApiPlatform.Domain.Enums;
 
 namespace UnifiedApiPlatform.Application.Features.AuditLogs.Queries.GetLoginLogs;
 

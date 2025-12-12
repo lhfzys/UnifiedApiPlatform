@@ -102,6 +102,9 @@ public static class DependencyInjection
         // 注册 IP 定位服务
         services.AddScoped<IIpLocationService, IpLocationService>();
 
+        // 注册导出服务
+        services.AddScoped<IExportService, ExportService>();
+
         return services;
     }
 }
