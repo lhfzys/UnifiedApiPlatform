@@ -201,6 +201,7 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(),
                 TenantId = "default",
+                Code = "SuperAdmin",
                 Name = "SuperAdmin",
                 DisplayName = "超级管理员",
                 Description = "拥有系统所有权限",
@@ -211,6 +212,7 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(),
                 TenantId = "default",
+                Code = "Admin",
                 Name = "Admin",
                 DisplayName = "管理员",
                 Description = "拥有大部分管理权限",
@@ -221,6 +223,7 @@ public class DataSeeder
             {
                 Id = Guid.NewGuid(),
                 TenantId = "default",
+                Code = "User",
                 Name = "User",
                 DisplayName = "普通用户",
                 Description = "基本用户权限",
@@ -394,7 +397,7 @@ public class DataSeeder
             var rolePermission = new RolePermission
             {
                 RoleId = superAdminRole.Id,
-                PermissionCode = permission.Code
+                PermissionId = permission.Id
             };
             _context.RolePermissions.Add(rolePermission);
         }

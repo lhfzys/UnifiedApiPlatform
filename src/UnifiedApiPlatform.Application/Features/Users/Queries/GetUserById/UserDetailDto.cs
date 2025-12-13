@@ -33,7 +33,7 @@ public class UserDetailDto
 
     // 角色和权限
     public List<RoleDto> Roles { get; set; } = new();
-    public List<string> Permissions { get; set; } = new();
+    public List<Guid> Permissions { get; set; } = new();
 }
 
 /// <summary>

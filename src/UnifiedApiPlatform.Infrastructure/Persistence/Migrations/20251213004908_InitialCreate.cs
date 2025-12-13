@@ -212,7 +212,6 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_permissions", x => x.id);
-                    table.UniqueConstraint("AK_permissions_code", x => x.code);
                 });
 
             migrationBuilder.CreateTable(
@@ -220,19 +219,21 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    code = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     display_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     is_system_role = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    sort = table.Column<int>(type: "integer", nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false),
+                    sort = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    created_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    created_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     updated_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
-                    updated_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    updated_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<Instant>(type: "timestamp with time zone", nullable: true),
-                    deleted_by = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    tenant_id = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    deleted_by = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    tenant_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
@@ -453,9 +454,9 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 name: "role_permissions",
                 columns: table => new
                 {
-                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    permission_code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    permission_id = table.Column<Guid>(type: "uuid", nullable: false),
                     row_version = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
                     created_at = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
                     created_by = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
@@ -464,13 +465,13 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_role_permissions", x => new { x.role_id, x.permission_code });
+                    table.PrimaryKey("pk_role_permissions", x => x.id);
                     table.ForeignKey(
                         name: "fk_role_permissions_permissions_permission_id",
-                        column: x => x.permission_code,
+                        column: x => x.permission_id,
                         principalTable: "permissions",
-                        principalColumn: "code",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_role_permissions_roles_role_id",
                         column: x => x.role_id,
@@ -981,14 +982,36 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 column: "role_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_role_permissions_permission_code",
+                name: "ix_role_permissions_permission_id",
                 table: "role_permissions",
-                column: "permission_code");
+                column: "permission_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_role_permissions_role_id",
                 table: "role_permissions",
                 column: "role_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_role_permissions_role_permission",
+                table: "role_permissions",
+                columns: new[] { "role_id", "permission_id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_roles_is_deleted",
+                table: "roles",
+                column: "is_deleted");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_roles_tenant_code",
+                table: "roles",
+                columns: new[] { "tenant_id", "code" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_roles_tenant_id",
+                table: "roles",
+                column: "tenant_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_scheduled_jobs_enabled",

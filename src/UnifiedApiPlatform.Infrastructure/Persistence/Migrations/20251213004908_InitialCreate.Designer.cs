@@ -13,7 +13,7 @@ using UnifiedApiPlatform.Infrastructure.Persistence;
 namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251212220824_InitialCreate")]
+    [Migration("20251213004908_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -1461,13 +1461,19 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("code");
+
                     b.Property<Instant>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("created_by");
 
                     b.Property<Instant?>("DeletedAt")
@@ -1475,8 +1481,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("deleted_at");
 
                     b.Property<string>("DeletedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("deleted_by");
 
                     b.Property<string>("Description")
@@ -1490,8 +1496,14 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("display_name");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
                     b.Property<bool>("IsSystemRole")
@@ -1513,13 +1525,15 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("row_version");
 
                     b.Property<int>("Sort")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
+                        .HasDefaultValue(0)
                         .HasColumnName("sort");
 
                     b.Property<string>("TenantId")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("tenant_id");
 
                     b.Property<Instant?>("UpdatedAt")
@@ -1527,12 +1541,22 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("updated_by");
 
                     b.HasKey("Id")
                         .HasName("pk_roles");
+
+                    b.HasIndex("IsDeleted")
+                        .HasDatabaseName("ix_roles_is_deleted");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_roles_tenant_id");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_roles_tenant_code");
 
                     b.ToTable("roles", (string)null);
                 });
@@ -1588,14 +1612,10 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("UnifiedApiPlatform.Domain.Entities.RolePermission", b =>
                 {
-                    b.Property<Guid>("RoleId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("role_id");
-
-                    b.Property<string>("PermissionCode")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("permission_code");
+                        .HasColumnName("id");
 
                     b.Property<Instant>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -1606,9 +1626,13 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("created_by");
 
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("PermissionId")
                         .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnName("permission_id");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("role_id");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -1625,13 +1649,18 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("updated_by");
 
-                    b.HasKey("RoleId", "PermissionCode");
+                    b.HasKey("Id")
+                        .HasName("pk_role_permissions");
 
-                    b.HasIndex("PermissionCode")
-                        .HasDatabaseName("ix_role_permissions_permission_code");
+                    b.HasIndex("PermissionId")
+                        .HasDatabaseName("ix_role_permissions_permission_id");
 
                     b.HasIndex("RoleId")
                         .HasDatabaseName("ix_role_permissions_role_id");
+
+                    b.HasIndex("RoleId", "PermissionId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_role_permissions_role_permission");
 
                     b.ToTable("role_permissions", (string)null);
                 });
@@ -2322,9 +2351,8 @@ namespace UnifiedApiPlatform.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("UnifiedApiPlatform.Domain.Entities.Permission", "Permission")
                         .WithMany("RolePermissions")
-                        .HasForeignKey("PermissionCode")
-                        .HasPrincipalKey("Code")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_role_permissions_permissions_permission_id");
 

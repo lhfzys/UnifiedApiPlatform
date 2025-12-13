@@ -9,10 +9,12 @@ public class Role : MultiTenantEntity, IAggregateRoot
 {
     private readonly List<DomainEvent> _domainEvents = new();
 
+    public string Code { get; set; } = null!;
     public string Name { get; set; } = null!;
     public string DisplayName { get; set; } = null!;
     public string? Description { get; set; }
     public bool IsSystemRole { get; set; }
+    public bool IsActive { get; set; } = true;
     public int Sort { get; set; }
 
     // 导航属性

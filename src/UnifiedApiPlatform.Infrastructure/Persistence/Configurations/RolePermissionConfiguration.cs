@@ -10,11 +10,18 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
     {
         builder.ToTable("role_permissions");
 
-        builder.HasKey(rp => new { rp.RoleId, rp.PermissionCode });
+        // 主键
+        builder.HasKey(rp => rp.Id);
 
-        builder.Property(rp => rp.PermissionCode)
-            .IsRequired()
-            .HasMaxLength(100);
+        // RoleId
+        builder.Property(rp => rp.RoleId)
+            .HasColumnName("role_id")
+            .IsRequired();
+
+        // PermissionId（外键）
+        builder.Property(rp => rp.PermissionId)
+            .HasColumnName("permission_id")
+            .IsRequired();
 
         // 配置审计字段
         builder.Property(rp => rp.CreatedAt).IsRequired();
@@ -23,14 +30,21 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
         builder.Property(rp => rp.UpdatedBy).HasMaxLength(50);
 
         builder.Property(rp => rp.RowVersion).IsRowVersion();
-        // 索引
+
+        // 唯一索引（角色-权限唯一）
+        builder.HasIndex(rp => new { rp.RoleId, rp.PermissionId })
+            .IsUnique()
+            .HasDatabaseName("ix_role_permissions_role_permission");
+
+        // 外键索引
         builder.HasIndex(rp => rp.RoleId)
             .HasDatabaseName("ix_role_permissions_role_id");
 
-        builder.HasIndex(rp => rp.PermissionCode)
-            .HasDatabaseName("ix_role_permissions_permission_code");
+        builder.HasIndex(rp => rp.PermissionId)
+            .HasDatabaseName("ix_role_permissions_permission_id");
 
         // 关系配置
+        // 导航属性配置
         builder.HasOne(rp => rp.Role)
             .WithMany(r => r.RolePermissions)
             .HasForeignKey(rp => rp.RoleId)
@@ -38,8 +52,7 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
 
         builder.HasOne(rp => rp.Permission)
             .WithMany(p => p.RolePermissions)
-            .HasForeignKey(rp => rp.PermissionCode)
-            .HasPrincipalKey(p => p.Code)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(rp => rp.PermissionId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

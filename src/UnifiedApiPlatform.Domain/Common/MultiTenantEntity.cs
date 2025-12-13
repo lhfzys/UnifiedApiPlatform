@@ -7,7 +7,7 @@ namespace UnifiedApiPlatform.Domain.Common;
 /// </summary>
 public abstract class MultiTenantEntity : SoftDeletableEntity
 {
-    public string TenantId { get; set; } = null!;
+    public Guid TenantId { get; set; }
 
     /// <summary>
     /// 行版本（乐观并发控制）

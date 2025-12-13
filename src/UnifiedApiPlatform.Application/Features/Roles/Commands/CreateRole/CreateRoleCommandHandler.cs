@@ -55,7 +55,7 @@ public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Resul
             {
                 foreach (var permissionCode in request.PermissionCodes)
                 {
-                    var rolePermission = new RolePermission { RoleId = role.Id, PermissionCode = permissionCode };
+                    var rolePermission = new RolePermission { RoleId = role.Id, PermissionId = new Guid(permissionCode) };
                     _context.RolePermissions.Add(rolePermission);
                 }
             }
